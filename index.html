@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>BLTiers v4.3.5</title>
+    <title>BLTiers v4.4</title>
     <link rel="icon" type="image/png" href="Normal.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,7 +13,7 @@
         body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:0;transition:background .3s,color .3s;min-height:100vh;overflow-x:hidden}
         .app-container{display:none}
         .app-container.active{display:block}
-        .navbar{display:flex;justify-content:space-between;align-items:center;padding:0 24px;height:60px;position:sticky;top:0;z-index:100;background:rgba(30,30,30,0.4);border-bottom:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);box-shadow:0 4px 30px rgba(0,0,0,0.1);box-sizing:border-box}
+        .navbar{display:flex;justify-content:space-between;align-items:center;padding:0 24px;height:60px;position:sticky;top:0;z-index:100;background:rgba(0,0,0,0.15);border-bottom:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);box-shadow:0 4px 30px rgba(0,0,0,0.1);box-sizing:border-box}
         .navbar-left,.navbar-right{display:flex;align-items:center;gap:12px;width:280px}
         .navbar-right{justify-content:flex-end;gap:10px}
         .nav-link{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;cursor:pointer;transition:.2s}
@@ -32,7 +32,7 @@
         #username,#exp-search-input,#cal-username{width:100%;box-sizing:border-box;height:36px!important}
         #username-container{width:240px}
         #media-type,#exp-media-type-sync{width:100px;cursor:pointer}
-        .fetch-btn{background:rgba(0,0,0,0.4);color:var(--text);border:1px solid var(--glass-border);font-size:14px;font-weight:bold;cursor:pointer;padding:0 18px;height:36px;border-radius:18px;transition:.2s;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}
+        .fetch-btn{background:rgba(0,0,0,0.4);color:var(--highlight);border:1px solid var(--glass-border);font-size:14px;font-weight:bold;cursor:pointer;padding:0 18px;height:36px;border-radius:18px;transition:.2s;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}
         .fetch-btn:hover{background:var(--accent);color:#000;border-color:var(--accent)}
         .fetch-btn:active{transform:translateY(1px)}
         .icon-btn,.color-tier-btn{background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);color:var(--highlight);cursor:pointer;width:36px;height:36px;min-width:36px;max-width:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:0;transition:.2s;overflow:hidden}
@@ -196,14 +196,14 @@
         .day-column.has-entries{cursor:pointer}
         .day-column.has-entries:hover{border-color:var(--accent);background:var(--inner)}
         .day-column.empty{opacity:.5;cursor:default}
-        .day-column.future{background:rgba(0,0,0,0.2);border-color:transparent;opacity:.3}
+        .day-column.future{background:rgba(0,0,0,0.1);border-color:transparent;opacity:.3}
         .day-summary-header{padding:12px;display:flex;flex-direction:column;gap:8px;pointer-events:none}
         .day-top-row{display:flex;justify-content:space-between;align-items:center}
         .date-number{color:var(--highlight);font-size:1.2rem;font-weight:800;line-height:1}
         .expand-icon{font-size:.8rem;color:var(--text-muted);transition:transform .3s ease}
         .day-column.expanded .expand-icon{transform:rotate(180deg);color:var(--accent)}
         .day-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:.85rem;font-weight:700;pointer-events:auto;margin-top:4px}
-        .stat-badge{background:rgba(0,0,0,0.4);padding:6px 2px;border-radius:4px;display:flex;justify-content:center;align-items:center;position:relative;border:1px solid var(--glass-border);text-align:center}
+        .stat-badge{background:rgba(0,0,0,0.15);padding:6px 2px;border-radius:4px;display:flex;justify-content:center;align-items:center;position:relative;border:1px solid var(--glass-border);text-align:center}
         .stat-badge.clickable{cursor:pointer;transition:background .2s}
         .stat-badge.clickable:hover{background:rgba(255,255,255,0.1);border-color:var(--accent)}
         .stat-badge.chapters span{color:#70b5f9}
@@ -214,7 +214,7 @@
         .day-column.expanded .entries-dropdown{display:flex}
         .entries-dropdown::-webkit-scrollbar{width:3px}
         .entries-dropdown::-webkit-scrollbar-thumb{background:var(--glass-border);border-radius:4px}
-        .cal-entry-card{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;min-width:0;margin-top:6px;position:relative;border:1px solid var(--glass-border)}
+        .cal-entry-card{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.15);padding:8px;border-radius:6px;min-width:0;margin-top:6px;position:relative;border:1px solid var(--glass-border)}
         .cal-entry-card.clickable{cursor:pointer;transition:background .2s ease,transform .2s ease}
         .cal-entry-card.clickable:hover{background:rgba(255,255,255,0.08);transform:translateX(4px);border-color:var(--accent)}
         .cal-entry-cover-wrapper{position:relative;flex-shrink:0;display:flex}
@@ -227,7 +227,7 @@
         .cal-entry-chapter em{color:var(--accent);font-style:normal;font-weight:600}
         .cal-entry-chapter.anime em{color:#ff80ab}
         .cal-chart-container{max-width:1600px;margin:30px auto;border-radius:12px;padding:20px;height:350px;position:relative}
-        .cal-picker-month{padding:12px;border-radius:8px;border:1px solid var(--glass-border);background:rgba(0,0,0,0.4);cursor:pointer;transition:.2s;color:var(--text-muted);font-weight:600;text-align:center;position:relative}
+        .cal-picker-month{padding:12px;border-radius:8px;border:1px solid var(--glass-border);background:rgba(0,0,0,0.15);cursor:pointer;transition:.2s;color:var(--text-muted);font-weight:600;text-align:center;position:relative}
         .cal-picker-month[data-tooltip]:hover::after{opacity:1;transform:translateX(-50%) translateY(-4px)}
         .cal-picker-month[data-tooltip]::after{content:attr(data-tooltip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(-8px);background:rgba(0,0,0,0.9);color:var(--highlight);padding:6px 10px;border-radius:6px;font-size:11px;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s;border:1px solid var(--accent);z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.5);font-weight:bold}
         .cal-picker-month:hover{border-color:var(--accent);color:var(--highlight)}
@@ -240,18 +240,18 @@
         .rec-matrix-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))!important;gap:26px!important;width:100%!important}
     </style>
 </head>
-<body class="hide-titles hide-badges hide-progress hide-total hide-score hide-mean hide-pop hide-status hide-hearts hide-startdate">
+<body class="hide-badges hide-progress hide-total hide-mean hide-pop hide-hearts hide-startdate hide-status hide-score hide-titles">
 <div class="navbar no-export">
     <div class="navbar-left">
         <div class="navbar-logo-icon" title="Select Global Theme">
             <span>⠁⠧⠑⠇</span>
             <select id="shared-theme-selector" class="braille-theme-select" onchange="applyGlobalTheme(this.value)">
-                <option value="tako" selected="selected">Tako</option><option value="squib">Squib</option><option value="sakura">Sakura</option><option value="pickle">Pickle</option><option value="forest">Forest</option><option value="cn">CN</option><option value="pastel">Pastel</option><option value="peach">Peach</option><option value="catppuccin">Catppuccin</option><option value="nord">Nord</option><option value="strawberry">Daiquiri</option><option value="h4ck3r">h4ck3r</option><option value="chocolate_mint">Choco Mint</option>
+                <option value="tako">Tako</option><option value="squib">Squib</option><option value="sakura">Sakura</option><option value="pickle">Pickle</option><option value="forest">Forest</option><option value="cn">CN</option><option value="pastel">Pastel</option><option value="peach">Peach</option><option value="catppuccin" selected="selected">Catppuccin</option><option value="nord">Nord</option><option value="strawberry">Daiquiri</option><option value="h4ck3r">h4ck3r</option><option value="chocolate_mint">Choco Mint</option><option value="cent">Cent</option><option value="rosey">Rosey</option><option value="ocean_ui">Ocean</option><option value="seaside">Seaside</option><option value="fresh">Fresh</option>
             </select>
         </div>
-        <a id="nav-profile-link" href="https://anilist.co/user/Finavel" target="_blank" class="nav-link" style="margin-left:4px;">
+        <a id="nav-profile-link" href="#" target="_blank" class="nav-link" style="margin-left:4px;">
             <img id="nav-avatar" class="nav-avatar" src="https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png" alt="User">
-            <span id="nav-username" class="nav-username">Finavel</span>
+            <span id="nav-username" class="nav-username"></span>
         </a>
     </div>
     <div class="navbar-center" id="nav-center-tier" style="display: flex;">
@@ -267,10 +267,10 @@
         <select id="exp-media-type-sync" onchange="$('media-type').value=this.value;updateTerminology();expSetMediaType(this.value);" style="margin-right:8px;">
             <option value="MANGA" selected="selected">Manga</option><option value="ANIME">Anime</option>
         </select>
-        <input type="text" id="exp-search-input" placeholder="Search specific series names..." oninput="expDebouncedSearch()" style="height:28px;border-radius:14px;">
+        <input type="text" id="exp-search-input" placeholder="Search specific series names..." oninput="expDebouncedSearch()" style="height:28px;border-radius:14px;background:rgba(0,0,0,0.15);">
     </div>
     <div class="navbar-center" id="nav-center-cal" style="display: none; max-width: 850px; margin: 0px 20px;">
-        <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);padding:0 8px;border-radius:18px;height:36px;">
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.15);border:1px solid var(--glass-border);padding:0 8px;border-radius:18px;height:36px;">
             <button class="cal-nav-btn" onclick="calPrevMonth()">◀</button>
             <div id="cal-month-year-label" style="font-weight:700;font-size:14px;color:var(--highlight);min-width:110px;text-align:center;cursor:pointer;padding:0 4px;" onclick="calOpenMonthPicker(event)" title="Select Month Popup">June 2026</div>
             <button class="cal-nav-btn" onclick="calNextMonth()">▶</button>
@@ -280,7 +280,7 @@
         <button class="fetch-btn" style="margin-left:4px;" onclick="calInitiateExport()">Export</button>
         <label class="fetch-btn" style="margin-left:4px;margin-bottom:0;cursor:pointer;line-height:34px;"><input type="file" accept=".json" multiple="" style="display:none;" onchange="calImportData(event)">Import</label>
         <div style="position:relative; margin-left:12px; display:flex; align-items:center;">
-            <input type="text" id="cal-title-search" placeholder="Search series..." oninput="calDebouncedSearch()" style="width: 140px; height: 36px; border-radius: 18px; padding: 0 16px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--highlight);">
+            <input type="text" id="cal-title-search" placeholder="Search series..." oninput="calDebouncedSearch()" style="width: 140px; height: 36px; border-radius: 18px; padding: 0 16px; background: rgba(0,0,0,0.15); border: 1px solid var(--glass-border); color: var(--highlight);">
             <div id="cal-search-results" style="display:none; position:absolute; top:100%; left:0; width:220px; max-height: 250px; overflow-y:auto; background: var(--bg); border: 1px solid var(--glass-border); border-radius: 8px; z-index: 1000; margin-top: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.8);"></div>
         </div>
         <div id="cal-adv-container" style="position:relative;margin-left:8px;display:flex;align-items:center;">
@@ -385,7 +385,7 @@
         </div>
         <div class="settings-group">
             <div class="settings-title clickable" onclick="toggleSection('tog-wrapper', 'tog-chevron')"><span>Display Toggles</span><span id="tog-chevron">▼</span></div>
-            <div id="tog-wrapper" style="display:none;animation:slideDown .1s ease-out;">
+            <div id="tog-wrapper" style="display: none; animation: 0.1s ease-out slideDown;">
                 <div class="toggles-grid" style="grid-template-columns:repeat(3,1fr);">
                     <label><input type="checkbox" id="toggle-titles" onchange="toggleClass('hide-titles', !this.checked)"> Title</label>
                     <label><input type="checkbox" id="toggle-score" onchange="toggleClass('hide-score', !this.checked)"> Score</label>
@@ -404,7 +404,7 @@
         </div>
         <div class="settings-group">
             <div class="settings-title clickable" onclick="toggleSection('stats-wrapper', 'stats-chevron')"><span>Library Stats</span><span id="stats-chevron">▼</span></div>
-            <div id="stats-wrapper" style="display:none;animation:slideDown .1s ease-out;">
+            <div id="stats-wrapper" style="display: none; animation: 0.1s ease-out slideDown;">
                 <div class="stats-grid glass" id="stats-grid">
                     <div><span>Total Series:</span><strong id="stat-total" style="color:var(--accent);">0</strong></div>
                     <div><span>Completed:</span><strong id="stat-finished" style="color:#a3be8c;">0</strong></div>
@@ -469,7 +469,7 @@
                 <span style="font-weight:700;font-size:16px;">Select Filters to Intersect</span>
                 <button class="exp-action-btn" style="padding:4px 10px;border-radius:8px;" onclick="expCloseTagModal()">✕</button>
             </div>
-            <input type="text" id="exp-tag-search-input" placeholder="Search 150+ genres and tags..." oninput="expFilterModalTags()">
+            <input type="text" id="exp-tag-search-input" placeholder="Search 150+ genres and tags..." oninput="expFilterModalTags()" style="background:rgba(0,0,0,0.15);">
         </div>
         <div class="exp-modal-body">
             <div class="exp-filter-label">Primary Genres</div>
@@ -512,9 +512,9 @@
 <div class="modal-overlay" id="cal-month-picker-overlay" style="display:none;z-index:12000;" onclick="calCloseMonthPicker()"></div>
 <div class="tier-modal glass" id="cal-month-picker-modal" style="display:none;width:320px;padding:24px;text-align:center;border-radius:16px;z-index:12001;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.4);border-radius:8px;padding:4px 12px;" onclick="calPickerPrevYear()">◀</button>
+        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.15);border-radius:8px;padding:4px 12px;" onclick="calPickerPrevYear()">◀</button>
         <span id="cal-picker-year" style="font-size:18px;font-weight:bold;color:var(--highlight);">2026</span>
-        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.4);border-radius:8px;padding:4px 12px;" onclick="calPickerNextYear()">▶</button>
+        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.15);border-radius:8px;padding:4px 12px;" onclick="calPickerNextYear()">▶</button>
     </div>
     <div id="cal-picker-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;"></div>
 </div>
@@ -522,7 +522,7 @@
 <div class="tier-modal glass" id="cal-history-modal" style="display:none; width: 420px; max-height: 75vh; overflow-y: auto; z-index: 12001; padding: 24px;">
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; gap: 12px;">
         <span id="cal-history-title" style="font-size:18px; font-weight:800; color:var(--highlight); line-height: 1.2;">Series History</span>
-        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.4); border-radius:8px; padding:6px 12px; flex-shrink: 0;" onclick="calCloseHistory()">✕</button>
+        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.15); border-radius:8px; padding:6px 12px; flex-shrink: 0;" onclick="calCloseHistory()">✕</button>
     </div>
     <div id="cal-history-list" style="display:flex; flex-direction:column; gap:8px;"></div>
 </div>
@@ -530,10 +530,10 @@
 <div class="tier-modal glass" id="cal-adv-modal" style="display:none; width: 900px; max-width: 95vw; max-height: 85vh; overflow-y: auto; z-index: 12001; padding: 24px;">
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; gap: 12px;">
         <span style="font-size:18px; font-weight:800; color:var(--highlight);">Database Stats & Leaderboards</span>
-        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.4); border-radius:8px; padding:6px 12px;" onclick="calCloseAdvModal()">✕</button>
+        <button class="cal-nav-btn" style="background:rgba(0,0,0,0.15); border-radius:8px; padding:6px 12px;" onclick="calCloseAdvModal()">✕</button>
     </div>
     <div style="display:flex; gap:16px; margin-bottom: 24px;">
-        <div style="flex:1; background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; border:1px solid var(--glass-border);">
+        <div style="flex:1; background:rgba(0,0,0,0.15); padding:16px; border-radius:12px; border:1px solid var(--glass-border);">
             <div style="font-size:11px; font-weight:bold; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Database Memory</div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;">
                 <div style="text-align:center;"><div style="font-size:18px; font-weight:bold; color:#70b5f9;" id="cal-adv-g-chap">0</div><div style="font-size:10px; color:var(--text-muted);">Chapters</div></div>
@@ -542,7 +542,7 @@
                 <div style="text-align:center;"><div style="font-size:18px; font-weight:bold; color:#b39ddb;" id="cal-adv-g-fin">0</div><div style="font-size:10px; color:var(--text-muted);">Finished</div></div>
             </div>
         </div>
-        <div style="flex:1; background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; border:1px solid var(--glass-border);">
+        <div style="flex:1; background:rgba(0,0,0,0.15); padding:16px; border-radius:12px; border:1px solid var(--glass-border);">
             <div id="cal-adv-y-label" style="font-size:11px; font-weight:bold; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Current Year Stats</div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;">
                 <div style="text-align:center;"><div style="font-size:18px; font-weight:bold; color:#70b5f9;" id="cal-adv-y-chap">0</div><div style="font-size:10px; color:var(--text-muted);">Chapters</div></div>
@@ -558,42 +558,42 @@
         <button class="fetch-btn" id="cal-lb-btn-finished" onclick="calSetLbMode('finished')">Titles Finished</button>
     </div>
     <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px;" id="cal-lb-grid-container">
-        <div style="background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
+        <div style="background:rgba(0,0,0,0.15); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
             <div style="background:rgba(255,255,255,0.05); padding:8px; font-size:12px; font-weight:bold; text-align:center;" id="cal-lb-streaks-title">Top Streaks</div>
             <div id="cal-lb-streaks-list" style="flex:1; padding:8px; min-height:200px;"></div>
-            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.4);">
+            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.15);">
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-streaks-prev" onclick="calLbPage('streaks', -1)">◀</button>
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-streaks-next" onclick="calLbPage('streaks', 1)">▶</button>
             </div>
         </div>
-        <div style="background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
+        <div style="background:rgba(0,0,0,0.15); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
             <div style="background:rgba(255,255,255,0.05); padding:8px; font-size:12px; font-weight:bold; text-align:center;" id="cal-lb-years-title">Top Years</div>
             <div id="cal-lb-years-list" style="flex:1; padding:8px; min-height:200px;"></div>
-            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.4);">
+            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.15);">
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-years-prev" onclick="calLbPage('years', -1)">◀</button>
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-years-next" onclick="calLbPage('years', 1)">▶</button>
             </div>
         </div>
-        <div style="background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
+        <div style="background:rgba(0,0,0,0.15); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
             <div style="background:rgba(255,255,255,0.05); padding:8px; font-size:12px; font-weight:bold; text-align:center;" id="cal-lb-months-title">Top Months</div>
             <div id="cal-lb-months-list" style="flex:1; padding:8px; min-height:200px;"></div>
-            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.4);">
+            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.15);">
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-months-prev" onclick="calLbPage('months', -1)">◀</button>
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-months-next" onclick="calLbPage('months', 1)">▶</button>
             </div>
         </div>
-        <div style="background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
+        <div style="background:rgba(0,0,0,0.15); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
             <div style="background:rgba(255,255,255,0.05); padding:8px; font-size:12px; font-weight:bold; text-align:center;" id="cal-lb-weeks-title">Top Weeks</div>
             <div id="cal-lb-weeks-list" style="flex:1; padding:8px; min-height:200px;"></div>
-            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.4);">
+            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.15);">
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-weeks-prev" onclick="calLbPage('weeks', -1)">◀</button>
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-weeks-next" onclick="calLbPage('weeks', 1)">▶</button>
             </div>
         </div>
-        <div style="background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
+        <div style="background:rgba(0,0,0,0.15); border-radius:8px; border:1px solid var(--glass-border); display:flex; flex-direction:column; overflow:hidden;">
             <div style="background:rgba(255,255,255,0.05); padding:8px; font-size:12px; font-weight:bold; text-align:center;" id="cal-lb-days-title">Top Days</div>
             <div id="cal-lb-days-list" style="flex:1; padding:8px; min-height:200px;"></div>
-            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.4);">
+            <div style="display:flex; justify-content:space-between; padding:4px; background:rgba(0,0,0,0.15);">
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-days-prev" onclick="calLbPage('days', -1)">◀</button>
                 <button class="cal-nav-btn" style="padding:2px 8px; font-size:10px;" id="cal-lb-days-next" onclick="calLbPage('days', 1)">▶</button>
             </div>
@@ -707,7 +707,12 @@ catppuccin: { bg: '#11111b', panel: 'rgba(24,24,37,0.7)', inner: 'rgba(24,24,37,
 nord: { bg: '#242933', panel: 'rgba(59,66,82,0.7)', inner: 'rgba(59,66,82,0.7)', accent: '#88c0d0' },
 strawberry: { bg: '#1f1214', panel: 'rgba(59,34,38,0.7)', inner: 'rgba(59,34,38,0.7)', accent: '#ff5252' },
 h4ck3r: { bg: '#1e2226', panel: 'rgba(55,60,65,0.8)', inner: 'rgba(55,60,65,0.8)', accent: '#98FBCB' },
-chocolate_mint: { bg: '#2b1d19', panel: 'rgba(64,46,42,0.8)', inner: 'rgba(64,46,42,0.8)', accent: '#76CD98' }
+chocolate_mint: { bg: '#2b1d19', panel: 'rgba(64,46,42,0.8)', inner: 'rgba(64,46,42,0.8)', accent: '#76CD98' },
+cent: { bg: '#EBE9E1', panel: 'rgba(228,60,18,0.7)', inner: 'rgba(228,60,18,0.5)', accent: '#FFA2B6' },
+rosey: { bg: '#e3e2df', panel: 'rgba(238,76,124,0.7)', inner: 'rgba(238,76,124,0.5)', accent: '#f8f8f8' },
+ocean_ui: { bg: '#84ceeb', panel: 'rgba(86,128,233,0.7)', inner: 'rgba(86,128,233,0.5)', accent: '#8860d0' },
+seaside: { bg: '#a8d0e6', panel: 'rgba(247,108,108,0.7)', inner: 'rgba(247,108,108,0.5)', accent: '#f8e9a1' },
+fresh: { bg: '#65ccb8', panel: 'rgba(242,242,242,0.7)', inner: 'rgba(242,242,242,0.5)', accent: '#ffb7c5' }
 };
 let customState = { bg: '#0a0a0a', inner: 'rgba(30,30,30,0.7)' };
 
@@ -733,6 +738,11 @@ setCss('--bg', t.bg);
 setCss('--panel', t.panel);
 setCss('--inner', t.inner);
 setCss('--accent', t.accent);
+
+const lightTextThemes = ['rosey', 'fresh', 'seaside', 'ocean_ui', 'cent', 'sakura', 'pastel', 'peach'];
+setCss('--text', lightTextThemes.includes(tId) ? '#ffffff' : '#e3e5e8');
+setCss('--text-muted', lightTextThemes.includes(tId) ? 'rgba(255,255,255,0.85)' : '#9fadbd');
+
 $$('.tier-row:not(#tier-dragpool)').forEach(r => r.style.background = t.inner);
 if (typeof updateGraphs === 'function') updateGraphs();
 if (calActivityChartInstance) calRenderTimelineChart(calGlobalCache[`${calCurrentYear}_${calCurrentMonth}`]?.processed);
@@ -1434,7 +1444,7 @@ if (score >= 90) return `rgb(${forest.join(',')})`; if (score >= 84) return lerp
 if (score >= 67) return lerpColor(yellow, pastel, (score - 67) / 17); if (score >= 59) return lerpColor(red, yellow, (score - 59) / 8); return `rgb(${red.join(',')})`;
 }
 
-const anilistGenres = ["Action","Adventure","Comedy","Drama","Ecchi","Fantasy","Horror","Mahou Shoujo","Mecha","Music","Mystery","Psychological","Romance","Sci-Fi","Slice of Life","Sports","Supernatural","Thriller"];
+const anilistGenres = ["Action", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", "Horror", "Mahou Shoujo", "Mecha", "Music", "Mystery", "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Supernatural", "Thriller"];
 const anilistTags = ["4-koma", "Achromatic", "Achronological Order", "Acrobatics", "Acting", "Adoption", "Advertisement", "Afterlife", "Age Gap", "Age Regression", "Agender", "Agriculture", "Airsoft", "Alchemy", "Aliens", "Alternate Universe", "American Football", "Amnesia", "Amputation", "Anachronism", "Anal Sex", "Ancient China", "Angels", "Animals", "Anthology", "Anthropomorphism", "Anti-Hero", "Archery", "Armpits", "Aromantic", "Arranged Marriage", "Artificial Intelligence", "Asexual", "Ashikoki", "Asphyxiation", "Assassins", "Astronomy", "Athletics", "Augmented Reality", "Autobiographical", "Aviation", "Badminton", "Ballet", "Band", "Bar", "Baseball", "Basketball", "Battle Royale", "Biographical", "Bisexual", "Blackmail", "Board Game", "Boarding School", "Body Horror", "Body Image", "Body Swapping", "Bondage", "Boobjob", "Bowling", "Boxing", "Boys' Love", "Bullying", "Butler", "CGI", "Calligraphy", "Camping", "Cannibalism", "Card Battle", "Cars", "Centaur", "Cheating", "Cheerleading", "Chibi", "Chimera", "Chuunibyou", "Circus", "Class Struggle", "Classic Literature", "Classical Music", "Clone", "Coastal", "Cohabitation", "College", "Coming of Age", "Conspiracy", "Cosmic Horror", "Cosplay", "Cowboys", "Creature Taming", "Crime", "Criminal Organization", "Crossdressing", "Crossover", "Cult", "Cultivation", "Cumflation", "Cunnilingus", "Curses", "Cute Boys Doing Cute Things", "Cute Girls Doing Cute Things", "Cyberpunk", "Cyborg", "Cycling", "DILF", "Dancing", "Death Game", "Deepthroat", "Defloration", "Delinquents", "Demons", "Denpa", "Desert", "Detective", "Dinosaurs", "Disability", "Dissociative Identities", "Double Penetration", "Dragons", "Drawing", "Drugs", "Dullahan", "Dungeon", "Dystopian", "E-Sports", "Eco-Horror", "Economics", "Educational", "Elderly Protagonist", "Elf", "Ensemble Cast", "Environmental", "Episodic", "Ero Guro", "Erotic Piercings", "Espionage", "Estranged Family", "Exhibitionism", "Exorcism", "Facial", "Fairy", "Fairy Tale", "Fake Relationship", "Family Life", "Fashion", "Feet", "Fellatio", "Femboy", "Femdom", "Female Harem", "Female Protagonist", "Fencing", "Filmmaking", "Fingering", "Firefighters", "Fishing", "Fitness", "Flat Chest", "Food", "Football", "Foreign", "Found Family", "Fugitive", "Full Color", "Futanari", "Gag Humor", "Gambling", "Gangs", "Gender Bending", "Ghost", "Go", "Goblin", "Gods", "Golf", "Gore", "Group Sex", "Guns", "Gyaru", "Handball", "Handjob", "Harem", "Henshin", "Hentai", "Heterosexual", "Hikikomori", "Hip-hop Music", "Historical", "Homeless", "Horticulture", "Human Experimentation", "Human Pet", "Hypersexuality", "Ice Skating", "Idol", "Incest", "Indigenous Cultures", "Inn", "Inseki", "Interspecies", "Irrumatio", "Isekai", "Iyashikei", "Jazz Music", "Josei", "Judo", "Kaiju", "Kemonomimi", "Kids", "Kingdom Management", "Konbini", "Kuudere", "LGBTQ+ Themes", "Lactation", "Language Barrier", "Large Breasts", "Long Strip", "Lost Civilization", "Love Triangle", "MILF", "Mafia", "Magic", "Maids", "Makeup", "Male Harem", "Male Pregnancy", "Male Protagonist", "Marriage", "Martial Arts", "Masochism", "Masturbation", "Matchmaking", "Matriarchy", "Medicine", "Medieval", "Memory Manipulation", "Mermaid", "Meta", "Military", "Mixed Gender Harem", "Mixed Media", "Modeling", "Monster Boy", "Monster Girl", "Mopeds", "Motorcycles", "Mountaineering", "Musical Theater", "Mythology", "Nakadashi", "Natural Disaster", "Necromancy", "Nekomimi", "Netorare", "Netorase", "Netori", "Ninja", "No Dialogue", "Noir", "Non-fiction", "Nudity", "Nun", "Office", "Office Lady", "Oiran", "Ojou-sama", "Omegaverse", "Orphan", "Otaku Culture", "Outdoor Activities", "POV", "Pandemic", "Parenthood", "Parody", "Pet Play", "Philosophy", "Photography", "Pirates", "Poker", "Police", "Politics", "Polyamorous", "Post-Apocalyptic", "Pregnancy", "Primarily Adult Cast", "Primarily Animal Cast", "Primarily Child Cast", "Primarily Female Cast", "Primarily Male Cast", "Primarily Teen Cast", "Prison", "Prostitution", "Proxy Battle", "Psychosexual", "Public Sex", "Rakugo", "Rape", "Real Robot", "Rehabilitation", "Reincarnation", "Religion", "Rescue", "Restaurant", "Revenge", "Reverse Harem", "Reverse Isekai", "Rimjob", "Robots", "Rock Music", "Rotoscoping", "Royal Affairs", "Rugby", "Rural", "Sadism", "Samurai", "Satire", "Scat", "School", "School Club", "Sci-Fi", "Scissoring", "Scuba Diving", "Seinen", "Sex Toys", "Shapeshifting", "Ships", "Shogi", "Short-Form Chapter", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Shrine Maiden", "Skateboarding", "Skeleton", "Slapstick", "Slavery", "Snowscape", "Software Development", "Space", "Space Opera", "Spearplay", "Sports", "Squirting", "Steampunk", "Succubus", "Suicide", "Sumata", "Sumo", "Super Power", "Super Robot", "Superhero", "Surreal Comedy", "Survival", "Sweat", "Swimming", "Swordplay", "Table Tennis", "Tanks", "Tanned Skin", "Teacher", "Teens' Love", "Tennis", "Tentacles", "Terrorism", "Threesome", "Thriller", "Time Loop", "Time Manipulation", "Time Skip", "Tokusatsu", "Tomboy", "Torture", "Tragedy", "Trains", "Transgender", "Travel", "Triads", "Tsundere", "Twins", "Unrequited Love", "Urban", "Urban Fantasy", "Vampire", "Video Games", "Vikings", "Villainess", "Virginity", "Virtual World", "Vocal Synth", "Volleyball", "Vore", "Voyeur", "War", "Watersports", "Werewolf", "Wilderness", "Witch", "Work", "Wrestling", "Writing", "Wuxia", "Yakuza", "Yandere", "Yaoi", "Youkai", "Yuri", "Zombie", "Zoophilia"];
 
 let expCurrentType = 'MANGA', expCurrentPage = 1, expSelectedTags = new Map(), expAdjustingTag = null, expSearchTimeout = null, expIsLoading = false, expHasNextPage = true, expCache = {};
@@ -1728,19 +1738,22 @@ if (prevBtn) prevBtn.style.opacity = page === 0 ? '0.3' : '1';
 if (nextBtn) nextBtn.style.opacity = page >= Math.ceil(arr.length / 10) - 1 ? '0.3' : '1';
 }
 
-function calLbJump(type, y, m = null, data = null) {
-calCloseAdvModal(); calCurrentYear = y; if (m !== null) calCurrentMonth = m; else calCurrentMonth = 0; calNavigateMonth();
+function calJumpToDate(y, m, d) {
+calCloseHistory();
+calCurrentYear = y;
+calCurrentMonth = m;
+calNavigateMonth();
 setTimeout(() => {
 const dayCols = document.querySelectorAll('.day-column');
-if (type === 'days' || type === 'streaks') {
 for (let col of dayCols) {
 const dateNum = col.querySelector('.date-number');
-if (dateNum && parseInt(dateNum.innerText) === data) { col.scrollIntoView({ behavior: 'smooth', block: 'center' }); calHighlightDay(col); if (type === 'days' && !col.classList.contains('expanded')) col.classList.add('expanded'); break; }
+if (dateNum && parseInt(dateNum.innerText) === d) {
+col.scrollIntoView({ behavior: 'smooth', block: 'center' });
+calHighlightDay(col);
+if (!col.classList.contains('expanded')) col.classList.add('expanded');
+break;
 }
-} else if (type === 'weeks') {
-for (let col of dayCols) { const dateNum = col.querySelector('.date-number'); if (dateNum && data.includes(parseInt(dateNum.innerText))) { if (!col.classList.contains('expanded')) col.classList.add('expanded'); calHighlightDay(col); } }
-for (let col of dayCols) { const dateNum = col.querySelector('.date-number'); if (dateNum && data.includes(parseInt(dateNum.innerText))) { col.scrollIntoView({ behavior: 'smooth', block: 'center' }); break; } }
-} else if (type === 'months' || type === 'years') { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
 }, 150);
 }
 
@@ -1840,25 +1853,6 @@ resDiv.style.display = 'block';
 }
 
 document.addEventListener('click', e => { if (!e.target.closest('#cal-title-search') && !e.target.closest('#cal-search-results')) { const resDiv = $('cal-search-results'); if (resDiv) resDiv.style.display = 'none'; } });
-
-function calJumpToDate(y, m, d) {
-calCloseHistory();
-calCurrentYear = y;
-calCurrentMonth = m;
-calNavigateMonth();
-setTimeout(() => {
-const dayCols = document.querySelectorAll('.day-column');
-for (let col of dayCols) {
-const dateNum = col.querySelector('.date-number');
-if (dateNum && parseInt(dateNum.innerText) === d) {
-col.scrollIntoView({ behavior: 'smooth', block: 'center' });
-calHighlightDay(col);
-if (!col.classList.contains('expanded')) col.classList.add('expanded');
-break;
-}
-}
-}, 150);
-}
 
 function calOpenHistory(title) {
 $('cal-search-results').style.display = 'none'; $('cal-title-search').value = ''; let history = [];
@@ -2114,7 +2108,7 @@ let st = e.maxProgress - e.chaptersRead + 1;
 if (e.chaptersRead === 1) rn = `<br><span style="color:#ccc;font-size:10px;font-style:normal;display:block;margin-top:2px;line-height:1;">${u1} ${e.maxProgress}</span>`;
 else rn = `<br><span style="color:#ccc;font-size:10px;font-style:normal;display:block;margin-top:2px;line-height:1;">${u1} ${Math.max(1, st)}-${e.maxProgress}</span>`;
 }
-return `<div class="cal-entry-card ${e.id || e.activityId ? 'clickable' : ''}" ${cA}><div class="cal-entry-cover-wrapper">${e.isCompleted ? `<div class="cal-heart-icon" title="Finished Today">❤️</div>` : ''}<img src="${e.coverUrl}" class="cal-entry-cover"></div><div class="cal-entry-details" style="justify-content:center;"><span class="cal-entry-title ${e.isStarted ? 'started' : ''}">${e.title}</span><span class="cal-entry-chapter ${e.type === 'ANIME' ? 'anime' : ''} ${e.isReread ? 'reread' : ''}"><em onclick="event.stopPropagation();calEditChapters('${calCurrentYear}_${calCurrentMonth}',${dx},'${e.id}',event)" style="cursor:text;" title="Click to manually edit chapters">+${e.chaptersRead} ${e.chaptersRead === 1 ? u1 : u2}</em>${rn}</span></div></div>`;
+return `<div class="cal-entry-card ${e.id || e.activityId ? 'clickable' : ''}" ${cA}><div class="cal-entry-cover-wrapper">${e.isCompleted ? `<div class="cal-heart-icon">❤️</div>` : ''}<img src="${e.coverUrl}" class="cal-entry-cover"></div><div class="cal-entry-details" style="justify-content:center;"><span class="cal-entry-title ${e.isStarted ? 'started' : ''}">${e.title}</span><span class="cal-entry-chapter ${e.type === 'ANIME' ? 'anime' : ''} ${e.isReread ? 'reread' : ''}"><em onclick="event.stopPropagation();calEditChapters('${calCurrentYear}_${calCurrentMonth}',${dx},'${e.id}',event)" style="cursor:text;" title="Click to manually edit chapters">+${e.chaptersRead} ${e.chaptersRead === 1 ? u1 : u2}</em>${rn}</span></div></div>`;
 };
 html += `<div style="padding:0 8px 8px;margin-top:-4px;">${renderEntry(dayData.entriesList[0], day)}</div>`;
 if (dayData.entriesList.length > 1) {
