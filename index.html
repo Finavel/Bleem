@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bleem</title>
+    <link rel="icon" type="image/png" href="Dizzy.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #2b1d19;
+            --panel: #1f1411;
+            --accent: #76CD98;
+            --text: #e3e5e8;
+            --text-muted: #9fadbd;
+            --highlight: #fff;
+            --radius: 8px;
+            --glass-border: rgba(255,255,255,0.08);
+            color-scheme: dark;
+        }
+
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+        body.modal-open { overflow: hidden; height: 100vh; }
+
+        .navbar { display: flex; flex-direction: column; position: sticky; top: 0; z-index: 100; background: rgba(43, 29, 25, 0.95); border-bottom: 1px solid var(--glass-border); }
+        .navbar-top { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 12px 16px; box-sizing: border-box; }
+        .navbar-logo { font-size: 24px; font-weight: 800; color: var(--accent); letter-spacing: 2px; display: flex; align-items: center; }
+
+        .navbar-search-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 16px; box-sizing: border-box; background: rgba(43, 29, 25, 0.95); }
+        
+        input { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--highlight); padding: 0 16px; border-radius: 18px; height: 36px; flex: 1; outline: none; }
+        
+        .exp-filter-dashboard {
+            padding: 24px 16px; display: none; flex-direction: column; gap: 16px;
+            position: absolute; top: 100%; left: 0; width: 100%; box-sizing: border-box;
+            background: #1f1411; box-shadow: 0 16px 40px rgba(0,0,0,0.8); z-index: 90;
+        }
+        .exp-filter-dashboard.show { display: flex; }
+
+        .exp-browser-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px 0; }
+        .exp-media-card { display: flex; flex-direction: column; gap: 6px; }
+        .exp-media-cover-container { aspect-ratio: 1 / 1.45; border-radius: var(--radius); overflow: hidden; }
+        .exp-media-cover-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .exp-title-text { font-size: 11px; font-weight: 700; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: left; font-style: normal; }
+
+        .exp-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; }
+        .exp-tag-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 95vw; max-height: 85vh; border-radius: 16px; z-index: 1000; flex-direction: column; background: var(--bg); overflow: hidden; }
+        
+        .rec-matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+        .exp-action-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--highlight); padding: 8px 16px; border-radius: 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<!-- Navbar & Settings -->
+<div class="navbar">
+    <div class="navbar-top">
+        <div class="navbar-logo">⠁⠧⠑⠇</div>
+        <div style="display:flex; gap: 12px; align-items: center;">
+            <label style="color:var(--text); font-size:11px;"><input type="checkbox" id="exp-sfw-toggle" checked onchange="expTriggerSearch()"> SFW</label>
+            <label style="color:#ff758f; font-size:11px;"><input type="checkbox" id="exp-nsfw-toggle" checked onchange="expTriggerSearch()"> 18+</label>
+        </div>
+    </div>
+    <div class="navbar-search-row">
+        <input type="text" id="exp-search-input" placeholder="Search series..." oninput="expDebouncedSearch()">
+        <button class="exp-action-btn" onclick="toggleSettings()" style="width:36px; height:36px; border-radius:50%; font-size:18px;">✦</button>
+        <div class="exp-filter-dashboard" id="settings-box">
+            <!-- Filter logic remains same as provided previously -->
+        </div>
+    </div>
+</div>
+
+<div id="explorer-app">
+    <div class="exp-main-container">
+        <div class="exp-grid-header" style="margin-top:20px;">
+            <div style="font-size: 16px; font-weight: 700; color: var(--highlight);" id="exp-grid-runtime-title">Global Indices</div>
+        </div>
+        <div class="exp-browser-grid" id="exp-content-grid"></div>
+        <div id="exp-scroll-sentinel" style="height: 60px;"></div>
+    </div>
+</div>
+
+<script>
+    // ... [Include the tag management logic and fetchAPI from previous iterations] ...
+    
+    // Official Sources Logic inside handleCardClick:
+    /*
+    if(item.externalLinks && item.externalLinks.length > 0) {
+        let processed = item.externalLinks.map(l => {
+            let isEN = (l.language === 'English' || l.site.toLowerCase().includes('english'));
+            let label = l.site.replace(' (15+)', ' 15+');
+            return { ...l, label, isEN };
+        });
+        processed.sort((a,b) => (a.isEN === b.isEN) ? a.label.localeCompare(b.label) : (a.isEN ? -1 : 1));
+        
+        sourcesHTML = `<div style="font-size:15px; font-weight:800; margin-bottom:12px; color:var(--highlight);">Official Sources</div>
+                       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px;">
+                        ${processed.map(l => `
+                            <a href="${l.url}" target="_blank" class="exp-action-btn" style="${l.isEN ? 'background:var(--accent); color:#000; font-weight:bold;' : ''}">
+                                ${l.label}${l.isEN ? ' (EN)' : ''}
+                            </a>`).join('')}
+                       </div>`;
+    }
+    */
+</script>
+</body>
+</html>
