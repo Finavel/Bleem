@@ -15,7 +15,7 @@
             --text: #e3e5e8;
             --text-muted: #9fadbd;
             --highlight: #fff;
-            --exp-cover-w: 125px;
+            --grid-cols: 3; /* Default to 3 wide */
             --radius: 8px;
             --glass-border: rgba(255,255,255,0.08);
             --glass-shadow: 0 4px 16px 0 rgba(0,0,0,0.2);
@@ -31,6 +31,8 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            /* Prevents native pull-to-refresh on some mobile browsers when pinching */
+            overscroll-behavior-y: contain; 
         }
 
         body.modal-open {
@@ -212,10 +214,10 @@
             padding: 6px 0;
         }
 
-        /* Grid System */
+        /* Grid System (Pinch-to-zoom targets this) */
         .exp-browser-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(var(--exp-cover-w), 1fr));
+            grid-template-columns: repeat(var(--grid-cols), 1fr);
             gap: 12px; 
             padding: 16px 0;
         }
@@ -503,6 +505,9 @@
     let currentResultsMap = {}; 
     let currentDetailData = null; 
     let initialLoadTriggered = false;
+    let currentCols = 3;
+    let initialPinchDist = null;
+    let initialCols = 3;
     
     const anilistGenres = ["Action", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", "Horror", "Mahou Shoujo", "Mecha", "Music", "Mystery", "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Supernatural", "Thriller"];
     const anilistTags = ["4-koma", "Age Gap", "Aliens", "Animals", "Boys' Love", "Crime", "Cyberpunk", "Demons", "Detective", "Dystopian", "E-Sports", "Fairy Tale", "Family Life", "Food", "Gangs", "Gender Bending", "Ghost", "Gods", "Gyaru", "Harem", "Historical", "Idol", "Isekai", "Josei", "Magic", "Martial Arts", "Mecha", "Military", "Monster Girl", "Music", "Ninja", "Office", "Parody", "Police", "Post-Apocalyptic", "Reincarnation", "Reverse Harem", "School", "Sci-Fi", "Seinen", "Shoujo", "Shounen", "Slice of Life", "Space", "Sports", "Super Power", "Superhero", "Survival", "Time Loop", "Tragedy", "Vampire", "Video Games", "Villainess", "Virtual World", "War", "Witch", "Yakuza", "Yandere", "Yuri", "Zombie"]; 
@@ -544,6 +549,42 @@
         if (!initialLoadTriggered && window.scrollY > 10) {
             initialLoadTriggered = true;
             expTriggerSearch();
+        }
+    });
+
+    // Pinch to Zoom Logic
+    document.body.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            initialPinchDist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            initialCols = currentCols;
+        }
+    }, {passive: true});
+
+    document.body.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && initialPinchDist) {
+            const dist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            const diff = initialPinchDist - dist; 
+            const colChange = Math.trunc(diff / 40); 
+            
+            let newCols = initialCols + colChange;
+            newCols = Math.max(1, Math.min(newCols, 6)); 
+            
+            if (newCols !== currentCols) {
+                currentCols = newCols;
+                document.documentElement.style.setProperty('--grid-cols', currentCols);
+            }
+        }
+    }, {passive: true});
+
+    document.body.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+            initialPinchDist = null;
         }
     });
 
@@ -776,7 +817,7 @@
         `).join('');
         $('sub-modal-container').innerHTML = `
             <div style="padding: 20px;">
-                <div style="font-weight:bold; font-size:16px; margin-bottom:12px; color:var(--highlight);">Tags (Tap to Add Filter)</div>
+                <div style="font-weight:bold; font-size:16px; margin-bottom:12px; color:var(--highlight); font-style:normal;">Tags (Tap to Add Filter)</div>
                 <div style="max-height: 50vh; overflow-y:auto;">${tagsHtml || '<div style="font-size:13px;">No tags found.</div>'}</div>
                 <button class="exp-action-btn" style="margin-top:16px; width:100%;" onclick="closeSubModal()">✕</button>
             </div>
@@ -1006,7 +1047,7 @@
                 </div>
                 
                 <div style="padding: 20px; display: flex; flex-direction: column;">
-                    <div style="background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 16px; overflow: hidden; display: flex; padding: 16px; gap: 16px;">
+                    <div style="background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--glass-border); overflow: hidden; display: flex; padding: 16px; gap: 16px;">
                         <img src="${item.coverImage.large}" style="width: 100px; height: 145px; border-radius: 8px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.6); flex-shrink: 0;">
                         <div style="display: flex; flex-direction: column; justify-content: flex-start; flex:1; min-width: 0;">
                             <a href="${item.siteUrl}" target="_blank" style="text-decoration: none; color: white; display: flex; flex-direction: column; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
@@ -1016,7 +1057,7 @@
                             <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: var(--text);">
                                 <div style="display: flex; justify-content: space-between;">
                                     <span style="color:var(--accent); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:60%;" title="${item.genres.join(', ')}">${item.genres.join(', ')}</span>
-                                    <span style="white-space:nowrap;">${item.chapters || item.episodes || '?'} ${expCurrentType === 'MANGA' ? 'Chs' : 'Eps'}</span>
+                                    <span style="white-space:nowrap;">${item.chapters || item.episodes || '?'} Chs</span>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">
                                     <span>${formatDateStr(item.startDate, item.status)}</span>
@@ -1031,7 +1072,7 @@
                     </div>
                     
                     <div style="margin-bottom: 24px;">
-                        <div id="summary-text" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size:13px; line-height:1.5; color:var(--text); white-space:pre-wrap;">${item.description || 'No summary available.'}</div>
+                        <div id="summary-text" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size:13px; line-height:1.5; color:var(--text); white-space:pre-wrap; margin-top: 12px;">${item.description || 'No summary available.'}</div>
                         ${item.description ? `<button onclick="document.getElementById('summary-text').style.webkitLineClamp='unset'; this.style.display='none';" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:bold; cursor:pointer; padding:8px 0; display:block; width:100%; text-align:left;">Expand</button>` : ''}
                     </div>
                     
@@ -1285,7 +1326,7 @@
         }
     }
 
-    window.closeExpSurpModal = function() { 
+    function closeExpSurpModal() { 
         $('exp-surp-modal-overlay').style.display = 'none'; 
         $('exp-surp-modal').style.display = 'none'; 
         updateModalScrollLock();
