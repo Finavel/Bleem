@@ -8,386 +8,107 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Default to Choco Mint */
             --bg: #2b1d19;
-            --panel: rgba(64,46,42,0.8);
-            --inner: rgba(64,46,42,0.8);
+            --panel: #1f1411;
             --accent: #76CD98;
             --text: #e3e5e8;
             --text-muted: #9fadbd;
             --highlight: #fff;
-            --exp-cover-w: 125px;
             --radius: 8px;
             --glass-border: rgba(255,255,255,0.08);
             color-scheme: dark;
         }
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-            transition: background 0.3s, color 0.3s;
-        }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+        body.modal-open { overflow: hidden; height: 100vh; }
 
-        /* Strictly prevents background scrolling when a modal is open */
-        body.modal-open {
-            overflow: hidden;
-            height: 100vh;
-        }
+        .navbar { display: flex; flex-direction: column; position: sticky; top: 0; z-index: 100; background: rgba(43, 29, 25, 0.95); border-bottom: 1px solid var(--glass-border); }
+        .navbar-top { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 12px 16px; box-sizing: border-box; }
+        .navbar-logo { font-size: 24px; font-weight: 800; color: var(--accent); letter-spacing: 2px; display: flex; align-items: center; }
 
-        /* Responsive Navbar */
-        .navbar {
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--panel);
-            border-bottom: 1px solid var(--glass-border);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-
-        .navbar-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 12px 16px;
-            box-sizing: border-box;
-            transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-            max-height: 100px;
-            opacity: 1;
-            overflow: hidden;
-        }
-
-        .navbar-top.hidden-top {
-            max-height: 0;
-            opacity: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-        .navbar-logo {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--accent);
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .braille-theme-select {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            border: none;
-            z-index: 10;
-        }
-
-        .navbar-search-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            padding: 10px 16px;
-            box-sizing: border-box;
-            background: var(--bg);
-            position: relative;
-        }
-
-        select, input[type="text"], input[type="number"] {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--glass-border);
-            color: var(--highlight);
-            padding: 0 16px;
-            border-radius: 18px;
-            outline: none;
-            font-size: 14px;
-            height: 36px;
-            box-sizing: border-box;
-            appearance: none;
-        }
-
-        select {
-            padding-right: 32px;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%239fadbd" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-        }
-
-        input:focus, select:focus { border-color: var(--accent); }
+        .navbar-search-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 16px; box-sizing: border-box; background: rgba(43, 29, 25, 0.95); }
         
-        #exp-search-input {
-            flex: 1;
-            height: 36px;
-            border-radius: 18px;
-        }
+        .search-input-wrapper { position: relative; flex: 1; display: flex; align-items: center; }
+        .search-input-wrapper input { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--highlight); padding: 0 36px 0 16px; border-radius: 18px; height: 36px; width: 100%; outline: none; font-size: 14px; box-sizing: border-box; }
+        .search-input-wrapper input:focus { border-color: var(--accent); }
+        .clear-search-btn { position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
+        .clear-search-btn:hover { color: var(--highlight); }
 
-        /* Glass UI Base */
-        .exp-glass {
-            background: var(--panel);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-
-        /* Buttons */
-        .exp-action-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--highlight);
-            padding: 8px 16px;
-            border-radius: 18px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: 0.2s;
-        }
-
-        .exp-action-btn:active { background: var(--accent); color: #000; }
-
-        /* Dashboard & Filters Dropdown - SOLID OPAQUE */
+        select, input[type="number"] { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--highlight); padding: 0 16px; border-radius: 18px; height: 36px; outline: none; font-size: 14px; box-sizing: border-box; appearance: none; }
+        select { padding-right: 32px; background-image: url('data:image/svg+xml;utf8,<svg fill="%239fadbd" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position: right 10px center; }
+        select:focus, input[type="number"]:focus { border-color: var(--accent); }
+        
         .exp-filter-dashboard {
-            padding: 24px 16px;
-            display: none; 
-            flex-direction: column;
-            gap: 16px;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            box-sizing: border-box;
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.8);
-            z-index: 90;
-            background: var(--bg); /* Solid opaque based on theme */
+            padding: 24px 16px; display: none; flex-direction: column; gap: 16px;
+            position: absolute; top: 100%; left: 0; width: 100%; box-sizing: border-box;
+            background: var(--panel); box-shadow: 0 16px 40px rgba(0,0,0,0.8); z-index: 90;
         }
-
-        .exp-filter-dashboard.show {
-            display: flex;
-        }
-
-        .exp-filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .exp-filter-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
+        .exp-filter-dashboard.show { display: flex; }
+        .exp-filter-group { display: flex; flex-direction: column; gap: 6px; }
+        .exp-filter-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
         select.full-width, input.full-width { width: 100%; }
 
-        /* Mobile Layout Main Area */
-        .exp-main-container {
-            padding: 0 16px 32px;
-            min-height: 110vh; 
-        }
+        .exp-main-container { padding: 0 16px 32px; min-height: 110vh; }
+        .tools-row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; margin-top: 16px; }
+        .tools-row-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .exp-tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0; }
 
-        .tools-row {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 16px;
-            margin-top: 16px;
-        }
-
-        .tools-row-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .exp-tag-cloud {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 6px 0;
-        }
-
-        /* Grid System (Forced 3 cols) */
-        .exp-browser-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px; 
-            padding: 16px 0;
-        }
-
-        /* Card Design */
-        .exp-card-link { 
-            text-decoration: none; 
-            color: inherit; 
-            display: block; 
-            cursor: pointer;
-        }
-        
+        .exp-browser-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px 0; }
+        .exp-card-link { text-decoration: none; color: inherit; display: block; cursor: pointer; }
         .exp-media-card { display: flex; flex-direction: column; gap: 6px; position: relative;}
-        .exp-media-cover-container {
-            position: relative;
-            aspect-ratio: 1 / 1.45;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-        .exp-card-link:active .exp-media-cover-container {
-            transform: scale(0.96);
-        }
-
-        .exp-media-cover-container img {
-            width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius);
-        }
+        .exp-media-cover-container { position: relative; aspect-ratio: 1 / 1.45; border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.4); overflow: hidden; transition: transform 0.2s; }
+        .exp-card-link:active .exp-media-cover-container { transform: scale(0.96); }
+        .exp-media-cover-container img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); }
         
         .exp-top-left-floating { position: absolute; top: 6px; left: 6px; display: flex; flex-direction: column; z-index: 20; }
         .exp-top-right-floating { position: absolute; top: 6px; right: 6px; display: flex; flex-direction: column; align-items: flex-end; z-index: 20; }
-        .exp-floating-text {
-            font-size: 11px;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-        }
+        .exp-floating-text { font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
+        .exp-card-title-below { font-size: 12px; font-weight: 700; line-height: 1.3; display: flex; align-items: flex-start; }
+        .exp-title-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: left; font-style: normal; }
+
+        .exp-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; }
+        .exp-tag-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 95vw; max-height: 85vh; border-radius: 16px; z-index: 1000; flex-direction: column; background: var(--bg); overflow: hidden; }
         
-        .exp-card-title-below {
-            font-size: 12px;
-            font-weight: 700;
-            line-height: 1.3;
-            display: flex;
-            align-items: flex-start;
-        }
+        .rec-matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+        .horizontal-scroll { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 16px; margin-bottom: 24px; scrollbar-width: none; }
+        .horizontal-scroll::-webkit-scrollbar { display: none; }
+
+        .exp-action-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--highlight); padding: 8px 16px; border-radius: 18px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .exp-action-btn:active { background: var(--accent); color: #000; }
         
-        .exp-title-text {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-align: left;
-            font-style: normal;
-        }
-
-        /* Modals for Mobile */
-        .exp-modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; backdrop-filter: blur(4px);
-        }
-
-        .exp-tag-modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
-            width: 95vw; 
-            max-height: 85vh; border-radius: 16px; z-index: 1000; flex-direction: column; overflow: hidden;
-        }
-
         .exp-modal-header { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 12px; }
         .exp-modal-body { padding: 16px; overflow-y: auto; flex: 1; }
         .exp-modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
-        
-        .exp-modal-item {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            padding: 10px; border-radius: 8px; font-size: 12px; color: var(--text);
-            text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+        .exp-modal-item { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 10px; border-radius: 8px; font-size: 12px; color: var(--text); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .exp-spinner {
-            width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;
-        }
+        .exp-spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .exp-loading-view { grid-column: 1 / -1; display: flex; justify-content: center; padding: 30px 0; width: 100%; height: 60px;}
 
-        /* Toggles */
         label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
-        input[type="checkbox"] {
-            appearance: none; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
-            width: 18px; height: 18px; border-radius: 4px; display: flex; justify-content: center; align-items: center;
-        }
+        input[type="checkbox"] { appearance: none; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); width: 18px; height: 18px; border-radius: 4px; display: flex; justify-content: center; align-items: center; }
         input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
         input[type="checkbox"]:checked::after { content: '✓'; color: #000; font-size: 12px; font-weight: bold; }
-
-        /* Rec Matrix Grid - Forced 3-wide for Mobile */
-        .rec-matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            width: 100%;
-        }
-        
-        /* Hide scrollbar for horizontal relations */
-        .horizontal-scroll {
-            display: flex; 
-            overflow-x: auto; 
-            gap: 12px; 
-            padding-bottom: 16px; 
-            margin-bottom: 24px;
-            scrollbar-width: none; 
-        }
-        .horizontal-scroll::-webkit-scrollbar {
-            display: none; 
-        }
-
-        .staff-bio a { color: var(--accent); text-decoration: none; font-weight: bold; }
-        .staff-bio a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="navbar" id="main-navbar">
     <div class="navbar-top" id="navbar-top">
-        <div class="navbar-logo" title="Select Global Theme">
-            <span>⠁⠧⠑⠇</span>
-            <select id="shared-theme-selector" class="braille-theme-select" onchange="applyGlobalTheme(this.value)">
-                <option value="tako">Tako</option>
-                <option value="squib">Squib</option>
-                <option value="sakura">Sakura</option>
-                <option value="pickle">Pickle</option>
-                <option value="forest">Forest</option>
-                <option value="cn">CN</option>
-                <option value="pastel">Pastel</option>
-                <option value="peach">Peach</option>
-                <option value="catppuccin">Catppuccin</option>
-                <option value="nord">Nord</option>
-                <option value="strawberry">Daiquiri</option>
-                <option value="h4ck3r">h4ck3r</option>
-                <option value="chocolate_mint" selected>Choco Mint</option>
-                <option value="cent">Cent</option>
-                <option value="rosey">Rosey</option>
-                <option value="ocean_ui">Ocean</option>
-                <option value="seaside">Seaside</option>
-                <option value="fresh">Fresh</option>
-            </select>
-        </div>
+        <div class="navbar-logo">⠁⠧⠑⠇</div>
         <div style="display:flex; gap: 12px; align-items: center;">
             <label style="color:var(--text); font-size:11px;"><input type="checkbox" id="exp-sfw-toggle" checked onchange="expTriggerSearch()"> SFW</label>
             <label style="color:#ff758f; font-size:11px;"><input type="checkbox" id="exp-nsfw-toggle" checked onchange="expTriggerSearch()"> 18+</label>
         </div>
     </div>
     <div class="navbar-search-row">
-        <input type="text" id="exp-search-input" placeholder="Search series..." oninput="expDebouncedSearch()">
+        <div class="search-input-wrapper">
+            <input type="text" id="exp-search-input" placeholder="Search series..." oninput="expDebouncedSearch()">
+            <button class="clear-search-btn" onclick="document.getElementById('exp-search-input').value=''; expTriggerSearch()">✕</button>
+        </div>
         <button class="exp-action-btn" style="padding: 0; border-radius: 50%; width:36px; height:36px; min-width:36px; font-size: 18px;" onclick="toggleSettings()" title="Settings & Filters">✦</button>
         
-        <!-- Hidden Settings Box (Solid) -->
+        <!-- Hidden Settings Box -->
         <div class="exp-filter-dashboard" id="settings-box">
             <div style="display: flex; gap: 12px;">
                 <div class="exp-filter-group" style="flex:1;">
@@ -428,19 +149,35 @@
                         <option value="FINISHED">Completed</option>
                     </select>
                 </div>
+                <div class="exp-filter-group" style="flex:1;">
+                    <span class="exp-filter-label">Source</span>
+                    <select id="exp-source-filter" class="full-width" onchange="expTriggerSearch()">
+                        <option value="all" selected>All Sources</option>
+                        <option value="EN_ALL">EN Sources</option>
+                        <option value="Lezhin (EN)">Lezhin (EN)</option>
+                        <option value="Bomtoon (EN)">Bomtoon (EN)</option>
+                        <option value="Tapas">Tapas</option>
+                        <option value="Tappytoon">Tappytoon</option>
+                        <option value="Webtoon">Webtoon</option>
+                        <option value="Manta">Manta</option>
+                        <option value="Pocket Comics">Pocket Comics</option>
+                        <option value="Bilibili Comics">Bilibili Comics</option>
+                        <option value="Lezhin">Lezhin (KR/JP)</option>
+                        <option value="Bomtoon">Bomtoon (KR)</option>
+                        <option value="Naver Webtoon">Naver Webtoon</option>
+                        <option value="Kakao Page">Kakao Page</option>
+                        <option value="Ridibooks">Ridibooks</option>
+                    </select>
+                </div>
             </div>
             <div style="display: flex; gap: 12px;">
                 <div class="exp-filter-group" style="flex:1;">
                     <span class="exp-filter-label">From</span>
-                    <select id="exp-year-start" class="full-width" onchange="expTriggerSearch()">
-                        <!-- JS populated -->
-                    </select>
+                    <select id="exp-year-start" class="full-width" onchange="expTriggerSearch()"></select>
                 </div>
                 <div class="exp-filter-group" style="flex:1;">
                     <span class="exp-filter-label">To</span>
-                    <select id="exp-year-end" class="full-width" onchange="expTriggerSearch()">
-                        <!-- JS populated -->
-                    </select>
+                    <select id="exp-year-end" class="full-width" onchange="expTriggerSearch()"></select>
                 </div>
             </div>
             <div style="display: flex; gap: 12px;">
@@ -463,18 +200,8 @@
             <div class="tools-row-inner">
                 <button class="exp-action-btn" onclick="expOpenTagModal()">+ Filter Tags</button>
                 <div style="display:flex; gap: 8px;">
-                    <!-- Magic Wand Button -->
                     <button class="exp-action-btn" style="padding: 8px 12px; border-color:var(--accent); color:var(--accent);" onclick="expLoadWandPreset()" title="Magic Wand: BL Manhwa Preset">
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"></path>
-                            <path d="m14 7 3 3"></path>
-                            <path d="M5 6v4"></path>
-                            <path d="M19 14v4"></path>
-                            <path d="M10 2v2"></path>
-                            <path d="M7 8H3"></path>
-                            <path d="M21 16h-4"></path>
-                            <path d="M11 3H9"></path>
-                        </svg>
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"></path><path d="m14 7 3 3"></path><path d="M5 6v4"></path><path d="M19 14v4"></path><path d="M10 2v2"></path><path d="M7 8H3"></path><path d="M21 16h-4"></path><path d="M11 3H9"></path></svg>
                     </button>
                     <button class="exp-action-btn" style="color:var(--accent); border-color:var(--accent);" onclick="expSurpriseMe()">✧ Surprise Me!</button>
                 </div>
@@ -505,7 +232,6 @@
             <span style="font-weight:700; font-size:16px;">Select Tags</span>
             <button class="exp-action-btn" style="padding:4px 12px; border-radius:8px;" onclick="expCloseTagModal()">✕</button>
         </div>
-        <input type="text" id="exp-tag-search-input" class="full-width" placeholder="Search genres/tags..." oninput="expFilterModalTags()">
     </div>
     <div class="exp-modal-body">
         <div class="exp-filter-label">Genres</div>
@@ -517,15 +243,11 @@
 
 <!-- Detailed Entry Modal -->
 <div class="exp-modal-overlay" id="detail-overlay" onclick="closeDetailModal()"></div>
-<div class="exp-tag-modal exp-glass" id="detail-container" style="padding: 0; background: var(--bg); overflow-y: auto; max-height: 90vh;">
-    <!-- Content injected via JS -->
-</div>
+<div class="exp-tag-modal exp-glass" id="detail-container" style="padding: 0; background: var(--bg); overflow-y: auto; max-height: 90vh;"></div>
 
 <!-- Sub-Modal for Tags/Staff -->
 <div class="exp-modal-overlay" id="sub-modal-overlay" style="z-index: 1001;" onclick="closeSubModal()"></div>
-<div class="exp-tag-modal exp-glass" id="sub-modal-container" style="z-index: 1002; padding: 0; background: var(--bg); overflow-y: auto; max-height: 85vh;">
-    <!-- Content injected via JS -->
-</div>
+<div class="exp-tag-modal exp-glass" id="sub-modal-container" style="z-index: 1002; padding: 0; background: var(--bg); overflow-y: auto; max-height: 85vh;"></div>
 
 <!-- Surprise Me Modal -->
 <div class="exp-modal-overlay" id="exp-surp-modal-overlay" onclick="closeExpSurpModal()"></div>
@@ -533,82 +255,37 @@
 
 <script>
     const $ = id => document.getElementById(id);
-    const setCss = (v, val) => document.documentElement.style.setProperty(v, val);
-
-    // Core Data & State
+    
     let expCurrentType = 'MANGA', expCurrentPage = 1, expSelectedTags = new Map(), expAdjustingTag = null;
     let expSearchTimeout = null, expIsLoading = false, expHasNextPage = true;
     let currentResultsMap = {}; 
     let currentDetailData = null; 
     let initialLoadTriggered = false;
-
-    // Themes Engine
-    const themes = {
-        tako: { bg: '#1c1d30', panel: 'rgba(52,53,79,0.7)', inner: 'rgba(52,53,79,0.5)', accent: '#f39c12' },
-        squib: { bg: '#0a0a0a', panel: 'rgba(30,30,30,0.7)', inner: 'rgba(30,30,30,0.7)', accent: '#f06292' },
-        sakura: { bg: '#f6b6c0', panel: 'rgba(248,211,226,0.7)', inner: 'rgba(248,211,226,0.5)', accent: '#999D55' },
-        pickle: { bg: '#1c241b', panel: 'rgba(48,61,46,0.7)', inner: 'rgba(48,61,46,0.5)', accent: '#a1c16d' },
-        forest: { bg: '#131a16', panel: 'rgba(37,51,43,0.7)', inner: 'rgba(37,51,43,0.5)', accent: '#f7f9e8' },
-        cn: { bg: '#4c1410', panel: 'rgba(148,43,39,0.7)', inner: 'rgba(148,43,39,0.5)', accent: '#eeb440' },
-        pastel: { bg: '#dfc5c4', panel: 'rgba(243,228,212,0.7)', inner: 'rgba(243,228,212,0.5)', accent: '#bed2c1' },
-        peach: { bg: '#be7c72', panel: 'rgba(216,165,148,0.7)', inner: 'rgba(216,165,148,0.5)', accent: '#e4cba9' },
-        catppuccin: { bg: '#11111b', panel: 'rgba(24,24,37,0.7)', inner: 'rgba(24,24,37,0.7)', accent: '#cba6f7' },
-        nord: { bg: '#242933', panel: 'rgba(59,66,82,0.7)', inner: 'rgba(59,66,82,0.7)', accent: '#88c0d0' },
-        strawberry: { bg: '#1f1214', panel: 'rgba(59,34,38,0.7)', inner: 'rgba(59,34,38,0.7)', accent: '#ff5252' },
-        h4ck3r: { bg: '#1e2226', panel: 'rgba(55,60,65,0.8)', inner: 'rgba(55,60,65,0.8)', accent: '#98FBCB' },
-        chocolate_mint: { bg: '#2b1d19', panel: 'rgba(64,46,42,0.8)', inner: 'rgba(64,46,42,0.8)', accent: '#76CD98' },
-        cent: { bg: '#EBE9E1', panel: 'rgba(228,60,18,0.7)', inner: 'rgba(228,60,18,0.5)', accent: '#FFA2B6' },
-        rosey: { bg: '#e3e2df', panel: 'rgba(238,76,124,0.7)', inner: 'rgba(238,76,124,0.5)', accent: '#f8f8f8' },
-        ocean_ui: { bg: '#84ceeb', panel: 'rgba(86,128,233,0.7)', inner: 'rgba(86,128,233,0.5)', accent: '#8860d0' },
-        seaside: { bg: '#a8d0e6', panel: 'rgba(247,108,108,0.7)', inner: 'rgba(247,108,108,0.5)', accent: '#f8e9a1' },
-        fresh: { bg: '#65ccb8', panel: 'rgba(242,242,242,0.7)', inner: 'rgba(242,242,242,0.5)', accent: '#ffb7c5' }
-    };
-
-    function applyGlobalTheme(tId) {
-        let t = themes[tId] || themes.chocolate_mint;
-        setCss('--bg', t.bg);
-        setCss('--panel', t.panel);
-        setCss('--inner', t.inner);
-        setCss('--accent', t.accent);
-
-        const lightTextThemes = ['rosey', 'fresh', 'seaside', 'ocean_ui', 'cent', 'sakura', 'pastel', 'peach'];
-        setCss('--text', lightTextThemes.includes(tId) ? '#ffffff' : '#e3e5e8');
-        setCss('--text-muted', lightTextThemes.includes(tId) ? 'rgba(255,255,255,0.85)' : '#9fadbd');
-    }
     
     const anilistGenres = ["Action", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", "Horror", "Mahou Shoujo", "Mecha", "Music", "Mystery", "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Supernatural", "Thriller"];
-    const anilistTags = ["4-koma", "Age Gap", "Aliens", "Animals", "Boys' Love", "Crime", "Cyberpunk", "Demons", "Detective", "Dystopian", "E-Sports", "Fairy Tale", "Family Life", "Food", "Gangs", "Gender Bending", "Ghost", "Gods", "Gyaru", "Harem", "Historical", "Idol", "Isekai", "Josei", "Magic", "Martial Arts", "Mecha", "Military", "Monster Girl", "Music", "Ninja", "Office", "Parody", "Police", "Post-Apocalyptic", "Reincarnation", "Reverse Harem", "School", "Sci-Fi", "Seinen", "Shoujo", "Shounen", "Slice of Life", "Space", "Sports", "Super Power", "Superhero", "Survival", "Time Loop", "Tragedy", "Vampire", "Video Games", "Villainess", "Virtual World", "War", "Witch", "Yakuza", "Yandere", "Yuri", "Zombie"]; 
+    const anilistTags = ["Boys' Love", "4-koma", "Achromatic", "Achronological Order", "Acrobatics", "Acting", "Adoption", "Advertisement", "Afterlife", "Age Gap", "Age Regression", "Agender", "Agriculture", "Airsoft", "Alchemy", "Aliens", "Alternate Universe", "American Football", "Amnesia", "Amputation", "Anachronism", "Anal Sex", "Ancient China", "Angels", "Animals", "Anthology", "Anthropomorphism", "Anti-Hero", "Archery", "Armpits", "Aromantic", "Arranged Marriage", "Artificial Intelligence", "Asexual", "Ashikoki", "Asphyxiation", "Assassins", "Astronomy", "Athletics", "Augmented Reality", "Autobiographical", "Aviation", "Badminton", "Ballet", "Band", "Bar", "Baseball", "Basketball", "Battle Royale", "Biographical", "Bisexual", "Blackmail", "Board Game", "Boarding School", "Body Horror", "Body Image", "Body Swapping", "Bondage", "Boobjob", "Bowling", "Boxing", "Bullying", "Butler", "CGI", "Calligraphy", "Camping", "Cannibalism", "Card Battle", "Cars", "Centaur", "Cheating", "Cheerleading", "Chibi", "Chimera", "Chuunibyou", "Circus", "Class Struggle", "Classic Literature", "Classical Music", "Clone", "Coastal", "Cohabitation", "College", "Coming of Age", "Conspiracy", "Cosmic Horror", "Cosplay", "Cowboys", "Creature Taming", "Crime", "Criminal Organization", "Crossdressing", "Crossover", "Cult", "Cultivation", "Cumflation", "Cunnilingus", "Curses", "Cute Boys Doing Cute Things", "Cute Girls Doing Cute Things", "Cyberpunk", "Cyborg", "Cycling", "DILF", "Dancing", "Death Game", "Deepthroat", "Defloration", "Delinquents", "Demons", "Denpa", "Desert", "Detective", "Dinosaurs", "Disability", "Dissociative Identities", "Double Penetration", "Dragons", "Drawing", "Drugs", "Dullahan", "Dungeon", "Dystopian", "E-Sports", "Eco-Horror", "Economics", "Educational", "Elderly Protagonist", "Elf", "Ensemble Cast", "Environmental", "Episodic", "Ero Guro", "Erotic Piercings", "Espionage", "Estranged Family", "Exhibitionism", "Exorcism", "Facial", "Fairy", "Fairy Tale", "Fake Relationship", "Family Life", "Fashion", "Feet", "Fellatio", "Femboy", "Femdom", "Female Harem", "Female Protagonist", "Fencing", "Filmmaking", "Fingering", "Firefighters", "Fishing", "Fitness", "Flat Chest", "Food", "Football", "Foreign", "Found Family", "Fugitive", "Full Color", "Futanari", "Gag Humor", "Gambling", "Gangs", "Gender Bending", "Ghost", "Go", "Goblin", "Gods", "Golf", "Gore", "Group Sex", "Guns", "Gyaru", "Handball", "Handjob", "Harem", "Henshin", "Hentai", "Heterosexual", "Hikikomori", "Hip-hop Music", "Historical", "Homeless", "Horticulture", "Human Experimentation", "Human Pet", "Hypersexuality", "Ice Skating", "Idol", "Incest", "Indigenous Cultures", "Inn", "Inseki", "Interspecies", "Irrumatio", "Isekai", "Iyashikei", "Jazz Music", "Josei", "Judo", "Kaiju", "Kemonomimi", "Kids", "Kingdom Management", "Konbini", "Kuudere", "LGBTQ+ Themes", "Lactation", "Language Barrier", "Large Breasts", "Long Strip", "Lost Civilization", "Love Triangle", "MILF", "Mafia", "Magic", "Maids", "Makeup", "Male Harem", "Male Pregnancy", "Male Protagonist", "Marriage", "Martial Arts", "Masochism", "Masturbation", "Matchmaking", "Matriarchy", "Medicine", "Medieval", "Memory Manipulation", "Mermaid", "Meta", "Military", "Mixed Gender Harem", "Mixed Media", "Modeling", "Monster Boy", "Monster Girl", "Mopeds", "Motorcycles", "Mountaineering", "Musical Theater", "Mythology", "Nakadashi", "Natural Disaster", "Necromancy", "Nekomimi", "Netorare", "Netorase", "Netori", "Ninja", "No Dialogue", "Noir", "Non-fiction", "Nudity", "Nun", "Office", "Office Lady", "Oiran", "Ojou-sama", "Omegaverse", "Orphan", "Otaku Culture", "Outdoor Activities", "POV", "Pandemic", "Parenthood", "Parody", "Pet Play", "Philosophy", "Photography", "Pirates", "Poker", "Police", "Politics", "Polyamorous", "Post-Apocalyptic", "Pregnancy", "Primarily Adult Cast", "Primarily Animal Cast", "Primarily Child Cast", "Primarily Female Cast", "Primarily Male Cast", "Primarily Teen Cast", "Prison", "Prostitution", "Proxy Battle", "Psychosexual", "Public Sex", "Rakugo", "Rape", "Real Robot", "Rehabilitation", "Reincarnation", "Religion", "Rescue", "Restaurant", "Revenge", "Reverse Harem", "Reverse Isekai", "Rimjob", "Robots", "Rock Music", "Rotoscoping", "Royal Affairs", "Rugby", "Rural", "Sadism", "Samurai", "Satire", "Scat", "School", "School Club", "Sci-Fi", "Scissoring", "Scuba Diving", "Seinen", "Sex Toys", "Shapeshifting", "Ships", "Shogi", "Short-Form Chapter", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Shrine Maiden", "Skateboarding", "Skeleton", "Slapstick", "Slavery", "Snowscape", "Software Development", "Space", "Space Opera", "Spearplay", "Sports", "Squirting", "Steampunk", "Succubus", "Suicide", "Sumata", "Sumo", "Super Power", "Super Robot", "Superhero", "Surreal Comedy", "Survival", "Sweat", "Swimming", "Swordplay", "Table Tennis", "Tanks", "Tanned Skin", "Teacher", "Teens' Love", "Tennis", "Tentacles", "Terrorism", "Threesome", "Thriller", "Time Loop", "Time Manipulation", "Time Skip", "Tokusatsu", "Tomboy", "Torture", "Tragedy", "Trains", "Transgender", "Travel", "Triads", "Tsundere", "Twins", "Unrequited Love", "Urban", "Urban Fantasy", "Vampire", "Video Games", "Vikings", "Villainess", "Virginity", "Virtual World", "Vocal Synth", "Volleyball", "Vore", "Voyeur", "War", "Watersports", "Werewolf", "Wilderness", "Witch", "Work", "Wrestling", "Writing", "Wuxia", "Yakuza", "Yandere", "Yaoi", "Youkai", "Yuri", "Zombie", "Zoophilia"];
 
-    // Helper function to format language codes for Official Sources
     function formatLangCode(lang) {
         if (!lang) return '';
         const map = { 'English': 'EN', 'Korean': 'KR', 'Japanese': 'JP', 'Chinese': 'CN', 'Spanish': 'ES', 'French': 'FR', 'Thai': 'TH', 'Indonesian': 'ID', 'Vietnamese': 'VN' };
         return ` (${map[lang] || lang.substring(0,2).toUpperCase()})`;
     }
 
-    // Scroll Lock Manager
     function updateModalScrollLock() {
         const modals = ['exp-modal-overlay', 'detail-overlay', 'sub-modal-overlay', 'exp-surp-modal-overlay'];
         const isOpen = modals.some(id => $(id) && $(id).style.display === 'block');
-        if (isOpen) {
-            document.body.classList.add('modal-open');
-        } else {
-            document.body.classList.remove('modal-open');
-        }
+        if (isOpen) document.body.classList.add('modal-open');
+        else document.body.classList.remove('modal-open');
     }
 
-    // Initialize Years Dropdowns
     function initYearDropdowns() {
         const currentYear = new Date().getFullYear() + 1; 
         let yearOpts = '<option value="">Any</option>';
-        for(let y = currentYear; y >= 1940; y--) {
-            yearOpts += `<option value="${y}">${y}</option>`;
-        }
+        for(let y = currentYear; y >= 1940; y--) yearOpts += `<option value="${y}">${y}</option>`;
         $('exp-year-start').innerHTML = yearOpts;
         $('exp-year-end').innerHTML = yearOpts;
     }
 
-    // Scroll Logic for Navbar Top & Initial Load
     let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
         const navbarTop = $('navbar-top');
@@ -619,20 +296,14 @@
         }
         lastScrollY = window.scrollY;
 
-        // Trigger initial load if user scrolls down
         if (!initialLoadTriggered && window.scrollY > 10) {
             initialLoadTriggered = true;
             expTriggerSearch();
         }
     });
 
-    // Toggle Settings
-    function toggleSettings() {
-        const box = $('settings-box');
-        box.classList.toggle('show');
-    }
+    function toggleSettings() { $('settings-box').classList.toggle('show'); }
 
-    // Dynamic Title Update
     function updateDynamicTitle() {
         let sort = $('exp-sort-filter').value;
         let format = $('exp-format-filter').value;
@@ -657,12 +328,9 @@
         $('exp-grid-runtime-title').innerText = `${sortName} ${formatName}`;
     }
 
-    // Helper Functions
     async function fetchAPI(query, variables) {
         const res = await fetch('https://graphql.anilist.co', {
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, 
-            body: JSON.stringify({ query, variables })
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ query, variables })
         });
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const json = await res.json();
@@ -670,10 +338,7 @@
         return json.data;
     }
 
-    function formatPopularity(p) { 
-        if (!p) return '0'; 
-        return p >= 1000 ? (p / 1000).toFixed(1).replace('.0', '') + 'k' : p.toString(); 
-    }
+    function formatPopularity(p) { return !p ? '0' : (p >= 1000 ? (p / 1000).toFixed(1).replace('.0', '') + 'k' : p.toString()); }
     
     function formatDateStr(dObj, status) {
         if(!dObj || !dObj.year) {
@@ -688,9 +353,7 @@
     function getScoreColor(score) {
         if (!score) return 'var(--text-muted)';
         const lerpColor = (c1, c2, t) => { 
-            const r = Math.round(c1[0] + (c2[0] - c1[0]) * t), 
-                  g = Math.round(c1[1] + (c2[1] - c1[1]) * t), 
-                  b = Math.round(c1[2] + (c2[2] - c1[2]) * t); 
+            const r = Math.round(c1[0] + (c2[0] - c1[0]) * t), g = Math.round(c1[1] + (c2[1] - c1[1]) * t), b = Math.round(c1[2] + (c2[2] - c1[2]) * t); 
             return `rgb(${r},${g},${b})`; 
         };
         const red = [255, 76, 76], yellow = [255, 215, 0], pastel = [119, 221, 119], forest = [34, 139, 34];
@@ -702,79 +365,47 @@
         return `rgb(${red.join(',')})`;
     }
 
-    function toTitleCase(str) {
-        return str.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
-    }
+    function toTitleCase(str) { return str.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, s => s.toUpperCase()); }
 
-    // Explorer Logic
     function expSetMediaType(type) {
         expCurrentType = type;
         if (type === 'MANGA') { 
             $('exp-format-filter').innerHTML = `<option value="all">All Sub-Formats</option><option value="MANGA">Manga</option><option value="MANHWA">Manhwa</option><option value="MANHUA">Manhua</option>`; 
-            $('lbl-min-chap').innerText = "Min Chapters";
-            $('lbl-max-chap').innerText = "Max Chapters";
+            $('lbl-min-chap').innerText = "Min Chapters"; $('lbl-max-chap').innerText = "Max Chapters";
         } else { 
             $('exp-format-filter').innerHTML = `<option value="all">All Sub-Formats</option><option value="TV">TV Show</option><option value="MOVIE">Movie</option><option value="OVA">OVA</option><option value="ONA">ONA</option>`; 
-            $('lbl-min-chap').innerText = "Min Eps";
-            $('lbl-max-chap').innerText = "Max Eps";
+            $('lbl-min-chap').innerText = "Min Eps"; $('lbl-max-chap').innerText = "Max Eps";
         }
         expTriggerSearch();
     }
 
-    function expDebouncedSearch() { 
-        clearTimeout(expSearchTimeout); 
-        expSearchTimeout = setTimeout(() => { expTriggerSearch(); }, 400); 
-    }
+    function expDebouncedSearch() { clearTimeout(expSearchTimeout); expSearchTimeout = setTimeout(() => { expTriggerSearch(); }, 400); }
     
-    function expTriggerSearch() { 
-        initialLoadTriggered = true;
-        expRenderActiveTags(); 
-        expExecuteSearch(false); 
-    }
+    function expTriggerSearch() { initialLoadTriggered = true; expRenderActiveTags(); expExecuteSearch(false); }
 
-    // Wand Logic
     function expLoadWandPreset() {
-        expSelectedTags.clear();
-        expSelectedTags.set("Boys' Love", 0);
+        expSelectedTags.clear(); expSelectedTags.set("Boys' Love", 0);
         $('exp-search-input').value = '';
-        $('exp-sfw-toggle').checked = true;
-        $('exp-nsfw-toggle').checked = true;
-        $('exp-status-filter').value = 'all';
-        $('exp-format-filter').value = 'MANHWA';
-        $('exp-sort-filter').value = 'MEAN_SCORE_DESC';
-        $('exp-year-start').value = '';
-        $('exp-year-end').value = '';
-        $('exp-chap-min').value = '';
-        $('exp-chap-max').value = '';
+        $('exp-sfw-toggle').checked = true; $('exp-nsfw-toggle').checked = true;
+        $('exp-status-filter').value = 'all'; $('exp-format-filter').value = 'MANHWA'; $('exp-sort-filter').value = 'MEAN_SCORE_DESC';
+        $('exp-year-start').value = ''; $('exp-year-end').value = ''; $('exp-chap-min').value = ''; $('exp-chap-max').value = ''; $('exp-source-filter').value = 'all';
         expTriggerSearch();
     }
 
-    // Modal & Tag Logic
     function expOpenTagModal() { 
-        $('exp-modal-overlay').style.display = 'block'; 
-        $('exp-tag-modal').style.display = 'flex'; 
-        $('exp-tag-search-input').value = ''; 
-        expRenderModalGrids(); 
-        updateModalScrollLock();
+        $('exp-modal-overlay').style.display = 'block'; $('exp-tag-modal').style.display = 'flex'; $('exp-tag-search-input').value = ''; 
+        expRenderModalGrids(); updateModalScrollLock();
     }
     
-    function expCloseTagModal() { 
-        $('exp-modal-overlay').style.display = 'none'; 
-        $('exp-tag-modal').style.display = 'none'; 
-        updateModalScrollLock();
-    }
+    function expCloseTagModal() { $('exp-modal-overlay').style.display = 'none'; $('exp-tag-modal').style.display = 'none'; updateModalScrollLock(); }
 
     function expRenderModalGrids(searchTerm = '') {
         const term = searchTerm.toLowerCase();
-        
-        const filteredGenres = anilistGenres.filter(g => g.toLowerCase().includes(term));
-        $('exp-modal-genre-grid').innerHTML = filteredGenres.map(tag => { 
+        $('exp-modal-genre-grid').innerHTML = anilistGenres.filter(g => g.toLowerCase().includes(term)).map(tag => { 
             const isSelected = expSelectedTags.has(tag); 
             return `<button class="exp-modal-item" style="${isSelected ? 'background:var(--accent); color:#000;' : ''}" onclick="expToggleTag('${tag.replace(/'/g, "\\'")}')">${tag}</button>`; 
         }).join('');
-        
-        const filteredTags = anilistTags.filter(t => t.toLowerCase().includes(term));
-        $('exp-modal-tag-grid').innerHTML = filteredTags.map(tag => { 
+        $('exp-modal-tag-grid').innerHTML = anilistTags.filter(t => t.toLowerCase().includes(term)).map(tag => { 
             const isSelected = expSelectedTags.has(tag); 
             return `<button class="exp-modal-item" style="${isSelected ? 'background:var(--accent); color:#000;' : ''}" onclick="expToggleTag('${tag.replace(/'/g, "\\'")}')">${tag}</button>`; 
         }).join('');
@@ -783,36 +414,23 @@
     function expFilterModalTags() { expRenderModalGrids($('exp-tag-search-input').value); }
     
     function expToggleTag(tag) { 
-        if (expSelectedTags.has(tag)) expSelectedTags.delete(tag); 
-        else expSelectedTags.set(tag, 0); 
-        expFilterModalTags(); 
-        expTriggerSearch(); 
+        if (expSelectedTags.has(tag)) expSelectedTags.delete(tag); else expSelectedTags.set(tag, 0); 
+        expFilterModalTags(); expTriggerSearch(); 
     }
 
-    function expOpenTagSlider(tag) { 
-        expAdjustingTag = tag; 
-        expRenderActiveTags(); 
-    }
+    function expOpenTagSlider(tag) { expAdjustingTag = tag; expRenderActiveTags(); }
     
     function expCommitTagRelevance(tag, val) { 
-        expAdjustingTag = null; 
-        expSelectedTags.set(tag, parseInt(val) || 0); 
-        expRenderActiveTags(); 
-        expTriggerSearch(); 
+        expAdjustingTag = null; expSelectedTags.set(tag, parseInt(val) || 0); 
+        expRenderActiveTags(); expTriggerSearch(); 
     }
 
     function expRenderActiveTags() {
         const cloud = $('exp-active-tags-cloud');
-        if (expSelectedTags.size === 0) { 
-            cloud.innerHTML = `<div style="font-size:12px; color:var(--text-muted);">No tags applied.</div>`; 
-            return; 
-        }
+        if (expSelectedTags.size === 0) { cloud.innerHTML = `<div style="font-size:12px; color:var(--text-muted);">No tags applied.</div>`; return; }
         
         cloud.innerHTML = Array.from(expSelectedTags.entries()).map(([tag, rev]) => {
-            const safeTag = tag.replace(/'/g, "\\'");
-            const isAdjusting = expAdjustingTag === tag;
-            const isGenre = anilistGenres.includes(tag);
-
+            const safeTag = tag.replace(/'/g, "\\'"); const isAdjusting = expAdjustingTag === tag; const isGenre = anilistGenres.includes(tag);
             if (isAdjusting && !isGenre) {
                 const hashId = btoa(tag).replace(/=/g, '');
                 return `<div style="background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 120px;">
@@ -822,35 +440,23 @@
             } else {
                 const pctText = (!isGenre && rev > 0) ? ` <span style="color:var(--accent);">${rev}%</span>` : '';
                 const clickAction = !isGenre ? `onclick="expOpenTagSlider('${safeTag}')"` : '';
-                
                 return `<div style="background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); padding: 6px 10px; border-radius: 12px; font-size: 12px; display: flex; align-items: center; gap: 8px;">
-                            <span style="font-weight:600;" ${clickAction}>${tag}${pctText}</span>
-                            <span style="cursor:pointer; opacity:0.7;" onclick="expToggleTag('${safeTag}')">✕</span>
+                            <span style="font-weight:600;" ${clickAction}>${tag}${pctText}</span><span style="cursor:pointer; opacity:0.7;" onclick="expToggleTag('${safeTag}')">✕</span>
                         </div>`;
             }
         }).join('');
     }
 
-    // Detailed Modals
-    function closeDetailModal() {
-        $('detail-overlay').style.display = 'none';
-        $('detail-container').style.display = 'none';
-        updateModalScrollLock();
-    }
+    function closeDetailModal() { $('detail-overlay').style.display = 'none'; $('detail-container').style.display = 'none'; updateModalScrollLock(); }
 
     window.openTags = function() {
         if(!currentDetailData) return;
-        $('sub-modal-overlay').style.display = 'block';
-        $('sub-modal-container').style.display = 'block';
-        updateModalScrollLock();
+        $('sub-modal-overlay').style.display = 'block'; $('sub-modal-container').style.display = 'block'; updateModalScrollLock();
         
         let tagsHtml = currentDetailData.tags.map(t => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;" onclick="addTagToSearch('${t.name.replace(/'/g, "\\'")}')">
                 <span style="font-size:13px; color:var(--highlight); pointer-events:none; text-align:left;">${t.name}</span>
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:13px; color:var(--accent); font-weight:bold; pointer-events:none;">${t.rank}%</span>
-                    <span style="color:var(--text-muted); font-size:16px;">+</span>
-                </div>
+                <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:13px; color:var(--accent); font-weight:bold; pointer-events:none;">${t.rank}%</span><span style="color:var(--text-muted); font-size:16px;">+</span></div>
             </div>
         `).join('');
         $('sub-modal-container').innerHTML = `
@@ -858,28 +464,14 @@
                 <div style="font-weight:bold; font-size:16px; margin-bottom:12px; color:var(--highlight); font-style:normal;">Tags (Tap to Add Filter)</div>
                 <div style="max-height: 50vh; overflow-y:auto;">${tagsHtml || '<div style="font-size:13px;">No tags found.</div>'}</div>
                 <button class="exp-action-btn" style="margin-top:16px; width:100%;" onclick="closeSubModal()">✕</button>
-            </div>
-        `;
+            </div>`;
     }
 
-    window.addTagToSearch = function(tag) {
-        expSelectedTags.set(tag, 0); 
-        expRenderActiveTags();
-        expTriggerSearch();
-        closeSubModal();
-        closeDetailModal();
-    };
+    window.addTagToSearch = function(tag) { expSelectedTags.set(tag, 0); expRenderActiveTags(); expTriggerSearch(); closeSubModal(); closeDetailModal(); };
 
     window.openStaffModal = async function(id) {
-        $('sub-modal-overlay').style.display = 'block';
-        $('sub-modal-container').style.display = 'block';
-        updateModalScrollLock();
-        
-        $('sub-modal-container').innerHTML = `
-            <div style="text-align:center; padding: 60px 0;">
-                <div class="exp-spinner" style="margin: 0 auto 16px;"></div>
-                <div style="color:var(--text-muted); font-size:13px;">Loading Staff Data...</div>
-            </div>`;
+        $('sub-modal-overlay').style.display = 'block'; $('sub-modal-container').style.display = 'block'; updateModalScrollLock();
+        $('sub-modal-container').innerHTML = `<div style="text-align:center; padding: 60px 0;"><div class="exp-spinner" style="margin: 0 auto 16px;"></div><div style="color:var(--text-muted); font-size:13px;">Loading Staff Data...</div></div>`;
             
         try {
             let q = `query($id: Int){ Staff(id: $id) { name { full } image { large } siteUrl description(asHtml:true) staffMedia(sort: START_DATE_DESC, page: 1, perPage: 15) { edges { staffRole node { id title { english romaji } coverImage { large } siteUrl averageScore meanScore popularity chapters episodes isAdult type startDate { year } tags { name } } } } } }`;
@@ -930,90 +522,31 @@
                             <span style="font-size: 16px; font-weight: bold; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:normal;">${staff.name.full}</span>
                         </div>
                     </a>
-                    
-                    ${staff.description ? `
-                        <div class="staff-bio" style="font-size:13px; line-height:1.5; color:var(--text); margin-bottom: 24px;">${staff.description}</div>
-                    ` : ''}
-                    
+                    ${staff.description ? `<div class="staff-bio" style="font-size:13px; line-height:1.5; color:var(--text); margin-bottom: 24px;">${staff.description}</div>` : ''}
                     <div style="font-size:15px; font-weight:800; margin-bottom:16px; color:var(--highlight); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; font-style:normal;">Other Works</div>
-                    <div class="rec-matrix-grid">
-                        ${worksHTML || '<div style="font-size:13px; color:var(--text-muted); font-style:normal;">No works found.</div>'}
-                    </div>
+                    <div class="rec-matrix-grid">${worksHTML || '<div style="font-size:13px; color:var(--text-muted); font-style:normal;">No works found.</div>'}</div>
                 </div>`;
         } catch (e) {
             $('sub-modal-container').innerHTML = `<div style="padding:20px; color:#f38ba8; text-align:center;">Failed to load staff details. Error: ${e.message}</div><button class="exp-action-btn" style="margin:20px; width:calc(100% - 40px);" onclick="closeSubModal()">✕</button>`;
         }
     }
 
-    window.closeSubModal = function() {
-        $('sub-modal-overlay').style.display = 'none';
-        $('sub-modal-container').style.display = 'none';
-    }
+    window.closeSubModal = function() { $('sub-modal-overlay').style.display = 'none'; $('sub-modal-container').style.display = 'none'; updateModalScrollLock(); }
 
-    // Detail Query Execution
     window.handleCardClick = async function(id, event) {
-        if(event) {
-            event.preventDefault(); 
-            event.stopPropagation(); 
-        }
+        if(event) { event.preventDefault(); event.stopPropagation(); }
         
         $('detail-overlay').style.display = 'block'; 
-        let container = $('detail-container'); 
-        container.style.display = 'block';
-        container.scrollTop = 0;
+        let container = $('detail-container'); container.style.display = 'block'; container.scrollTop = 0;
         updateModalScrollLock();
         
-        container.innerHTML = `
-            <div style="text-align:center; padding: 60px 0;">
-                <div class="exp-spinner" style="margin: 0 auto 16px;"></div>
-                <div style="color:var(--text-muted); font-size:13px;">Consulting the Oracle...</div>
-            </div>`;
+        container.innerHTML = `<div style="text-align:center; padding: 60px 0;"><div class="exp-spinner" style="margin: 0 auto 16px;"></div><div style="color:var(--text-muted); font-size:13px;">Consulting the Oracle...</div></div>`;
             
         try {
-            let q = `query($id: Int) {
-              Media(id: $id) {
-                id
-                title { english romaji }
-                coverImage { large }
-                siteUrl
-                popularity
-                status
-                startDate { year month day }
-                endDate { year month day }
-                chapters
-                episodes
-                averageScore
-                meanScore
-                genres
-                description(asHtml: false)
-                tags { name rank }
-                relations {
-                  edges {
-                    relationType
-                    node { id title { english romaji } coverImage { large } siteUrl type }
-                  }
-                }
-                staff {
-                  edges {
-                    role
-                    node { id name { full } image { large } siteUrl }
-                  }
-                }
-                externalLinks { site url language }
-                recommendations(sort: RATING_DESC, page: 1, perPage: 15) {
-                  nodes {
-                    rating
-                    mediaRecommendation {
-                      id title { english romaji } coverImage { large } siteUrl averageScore meanScore popularity chapters episodes isAdult tags { name }
-                    }
-                  }
-                }
-              }
-            }`;
+            let q = `query($id: Int) { Media(id: $id) { id title { english romaji } coverImage { large } siteUrl popularity status startDate { year month day } endDate { year month day } chapters episodes averageScore meanScore genres description(asHtml: false) tags { name rank } relations { edges { relationType node { id title { english romaji } coverImage { large } siteUrl type } } } staff { edges { role node { id name { full } image { large } siteUrl } } } externalLinks { site url language } recommendations(sort: RATING_DESC, page: 1, perPage: 15) { nodes { rating mediaRecommendation { id title { english romaji } coverImage { large } siteUrl averageScore meanScore popularity chapters episodes isAdult tags { name } } } } } }`;
             
             let data = await fetchAPI(q, { id: id });
-            let item = data.Media;
-            currentDetailData = item;
+            let item = data.Media; currentDetailData = item;
             
             const hasOmega = item.tags?.some(t => t.name.toLowerCase() === 'omegaverse');
             let baseTitle = (item.title.english || item.title.romaji || 'Unknown Entity') + (hasOmega ? ' 🐺' : '');
@@ -1023,11 +556,7 @@
             if(item.relations && item.relations.edges.length > 0) {
                 relationsHTML = item.relations.edges.map(edge => {
                     let relType = toTitleCase(edge.relationType);
-                    return `
-                    <div style="flex-shrink:0; width: 90px; cursor:pointer;" onclick="handleCardClick(${edge.node.id}, event)">
-                        <img src="${edge.node.coverImage.large}" style="width:90px; height:125px; object-fit:cover; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
-                        <div style="font-size:11px; font-weight:bold; color:var(--highlight); text-align:left; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:normal;">${relType}</div>
-                    </div>`;
+                    return `<div style="flex-shrink:0; width: 90px; cursor:pointer;" onclick="handleCardClick(${edge.node.id}, event)"><img src="${edge.node.coverImage.large}" style="width:90px; height:125px; object-fit:cover; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"><div style="font-size:11px; font-weight:bold; color:var(--highlight); text-align:left; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:normal;">${relType}</div></div>`;
                 }).join('');
             }
             
@@ -1037,13 +566,12 @@
                     <div onclick="openStaffModal(${edge.node.id})" style="flex-shrink:0; width: 90px; cursor:pointer;">
                         <img src="${edge.node.image.large}" style="width:90px; height:125px; object-fit:cover; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
                         <div style="font-size:11px; font-weight:bold; color:var(--highlight); text-align:left; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:normal;">${edge.node.name.full}</div>
-                        <div style="font-size:11px; color:var(--text-muted); text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:normal;">${edge.role}</div>
+                        <div style="font-size:10px; color:var(--text-muted); text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:normal;">${edge.role}</div>
                     </div>`).join('');
             }
 
             let sourcesHTML = '';
             if(item.externalLinks && item.externalLinks.length > 0) {
-                // Determine 15+ vs 18+ and isolate Enlgish to the front
                 let processedLinks = item.externalLinks.map(link => {
                     let siteName = link.site;
                     let is15 = siteName.includes('15+');
@@ -1064,11 +592,8 @@
                 processedLinks.forEach(l => {
                     let key = l.baseSite + l.langCode;
                     let counts = baseSiteCounts[key];
-                    if (l.is15) {
-                        l.displaySite = counts.hasOther ? l.baseSite + ' 15+' : l.baseSite;
-                    } else {
-                        l.displaySite = l.originalSite;
-                    }
+                    if (l.is15) l.displaySite = counts.hasOther ? l.baseSite + ' 15+' : l.baseSite;
+                    else l.displaySite = l.originalSite;
                 });
 
                 processedLinks.sort((a, b) => {
@@ -1080,13 +605,8 @@
                 sourcesHTML = `
                     <div style="font-size:15px; font-weight:800; margin-bottom:12px; color:var(--highlight); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; font-style:normal;">Official Sources</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 24px;">
-                        ${processedLinks.map(l => `
-                            <a href="${l.url}" target="_blank" class="exp-action-btn" style="text-decoration:none; font-size:11px; padding:6px 12px; font-style:normal; ${l.isEN ? 'background:var(--accent); color:#000; border-color:var(--accent); font-weight:bold;' : ''}">
-                                ${l.displaySite}${l.langCode}
-                            </a>
-                        `).join('')}
-                    </div>
-                `;
+                        ${processedLinks.map(l => `<a href="${l.url}" target="_blank" class="exp-action-btn" style="text-decoration:none; font-size:11px; padding:6px 12px; font-style:normal; ${l.isEN ? 'background:var(--accent); color:#000; border-color:var(--accent); font-weight:bold;' : ''}">${l.displaySite}${l.langCode}</a>`).join('')}
+                    </div>`;
             }
             
             let recsHTML = '';
@@ -1128,7 +648,7 @@
             let displayMeanScore = item.meanScore || item.averageScore;
             
             container.innerHTML = `
-                <div style="position: sticky; top: 0; z-index: 50; width:100%; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding:16px; box-sizing:border-box; background: var(--bg);">
+                <div style="position: sticky; top: 0; z-index: 50; width:100%; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding:16px; box-sizing:border-box; background: rgba(25, 15, 12, 0.95); backdrop-filter: blur(16px);">
                     <span style="font-size:16px; font-weight:700; color:var(--highlight); text-align:left; line-height:1.2; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-right: 12px; font-style:normal;">${baseTitle}</span>
                     <div style="display:flex; gap:8px;">
                         <button class="exp-action-btn" style="padding:6px 12px; border-radius:8px; background:var(--accent); color:#000; border:none;" onclick="openTags()">Tags</button>
@@ -1192,46 +712,24 @@
                         <div style="font-size:13px; color:var(--text-muted); margin-bottom:32px; font-style:normal;">No recommendations found.</div>
                     `}
                 </div>`;
-        } catch (e) { 
-            container.innerHTML = `<div style="width:100%; display:flex; justify-content:flex-end; padding: 16px;"><button class="exp-action-btn" onclick="closeDetailModal()">✕</button></div><div style="color:#f38ba8; text-align:center; width:100%; padding:20px;">Failed to gather references. Error: ${e.message}</div>`; 
-        }
+        } catch (e) { container.innerHTML = `<div style="width:100%; display:flex; justify-content:flex-end; padding: 16px;"><button class="exp-action-btn" onclick="closeDetailModal()">✕</button></div><div style="color:#f38ba8; text-align:center; width:100%; padding:20px;">Failed to gather references. Error: ${e.message}</div>`; }
     }
 
-    // Core Search Execution
     async function expExecuteSearch(append = false) {
-        if (expIsLoading) return; 
-        expIsLoading = true;
-        
-        const grid = $('exp-content-grid');
-        const sentinel = $('exp-scroll-sentinel');
-        if (!append) { 
-            grid.innerHTML = ''; 
-            expCurrentPage = 1; 
-            expHasNextPage = true; 
-        }
+        if (expIsLoading) return; expIsLoading = true;
+        const grid = $('exp-content-grid'); const sentinel = $('exp-scroll-sentinel');
+        if (!append) { grid.innerHTML = ''; expCurrentPage = 1; expHasNextPage = true; }
         sentinel.style.display = 'flex';
         
         const searchVal = $('exp-search-input').value.trim();
-        let isSfw = $('exp-sfw-toggle').checked;
-        let isNsfw = $('exp-nsfw-toggle').checked;
+        let isSfw = $('exp-sfw-toggle').checked, isNsfw = $('exp-nsfw-toggle').checked;
         
-        if (!isSfw && !isNsfw) { 
-            grid.innerHTML = `<div class="exp-loading-view"><span>Please select at least one content rating.</span></div>`; 
-            expIsLoading = false; sentinel.style.display = 'none'; return; 
-        }
+        if (!isSfw && !isNsfw) { grid.innerHTML = `<div class="exp-loading-view"><span>Please select at least one content rating.</span></div>`; expIsLoading = false; sentinel.style.display = 'none'; return; }
         
-        const sortVal = $('exp-sort-filter').value;
-        const formatVal = $('exp-format-filter').value;
-        const statusVal = $('exp-status-filter').value;
+        const sortVal = $('exp-sort-filter').value, formatVal = $('exp-format-filter').value, statusVal = $('exp-status-filter').value;
+        let activeGenres = Array.from(expSelectedTags.keys()).filter(t => anilistGenres.includes(t)), activeTags = Array.from(expSelectedTags.keys()).filter(t => !anilistGenres.includes(t));
         
-        let activeGenres = Array.from(expSelectedTags.keys()).filter(t => anilistGenres.includes(t));
-        let activeTags = Array.from(expSelectedTags.keys()).filter(t => !anilistGenres.includes(t));
-        
-        let queryArgs = `$page: Int, $perPage: Int, $type: MediaType, $sort: [MediaSort]`;
-        let mediaArgs = `type: $type, sort: $sort`;
-        let apiSortVal = sortVal === 'MEAN_SCORE_DESC' ? 'SCORE_DESC' : sortVal;
-        
-        // 40 items per batch to handle large desktop monitors triggering infinite scroll
+        let queryArgs = `$page: Int, $perPage: Int, $type: MediaType, $sort: [MediaSort]`, mediaArgs = `type: $type, sort: $sort`, apiSortVal = sortVal === 'MEAN_SCORE_DESC' ? 'SCORE_DESC' : sortVal;
         let variables = { page: expCurrentPage, perPage: 40, type: expCurrentType, sort: [apiSortVal] }; 
         
         if (isSfw && !isNsfw) { queryArgs += `, $isAdult: Boolean`; mediaArgs += `, isAdult: $isAdult`; variables.isAdult = false; }
@@ -1245,69 +743,47 @@
         else if (formatVal === 'MANHUA') { queryArgs += `, $country: CountryCode`; mediaArgs += `, countryOfOrigin: $country`; variables.country = 'CN'; }
         else if (formatVal !== 'all') { queryArgs += `, $format: MediaFormat`; mediaArgs += `, format: $format`; variables.format = formatVal; }
         
-        // Apply Year Filters
-        let startY = $('exp-year-start').value;
-        let endY = $('exp-year-end').value;
+        let startY = $('exp-year-start').value, endY = $('exp-year-end').value;
         if (startY && endY && startY === endY) {
-            queryArgs += `, $startDate_greater: Int, $startDate_lesser: Int`;
-            mediaArgs += `, startDate_greater: $startDate_greater, startDate_lesser: $startDate_lesser`;
-            variables.startDate_greater = parseInt(startY + "0000");
-            variables.startDate_lesser = parseInt(startY + "9999");
+            queryArgs += `, $startDate_greater: Int, $startDate_lesser: Int`; mediaArgs += `, startDate_greater: $startDate_greater, startDate_lesser: $startDate_lesser`;
+            variables.startDate_greater = parseInt(startY + "0000"); variables.startDate_lesser = parseInt(startY + "9999");
         } else {
-            if (startY) {
-                queryArgs += `, $startDate_greater: Int`;
-                mediaArgs += `, startDate_greater: $startDate_greater`;
-                variables.startDate_greater = parseInt(startY + "0000");
-            }
-            if (endY) {
-                queryArgs += `, $startDate_lesser: Int`;
-                mediaArgs += `, startDate_lesser: $startDate_lesser`;
-                variables.startDate_lesser = parseInt(endY + "9999");
-            }
+            if (startY) { queryArgs += `, $startDate_greater: Int`; mediaArgs += `, startDate_greater: $startDate_greater`; variables.startDate_greater = parseInt(startY + "0000"); }
+            if (endY) { queryArgs += `, $startDate_lesser: Int`; mediaArgs += `, startDate_lesser: $startDate_lesser`; variables.startDate_lesser = parseInt(endY + "9999"); }
         }
 
-        // Apply Chapter/Episode Filters
-        let minC = parseInt($('exp-chap-min').value);
-        let maxC = parseInt($('exp-chap-max').value);
-        let isManga = expCurrentType === 'MANGA';
-        if (!isNaN(minC) && minC > 0) {
-            queryArgs += isManga ? `, $chapters_greater: Int` : `, $episodes_greater: Int`;
-            mediaArgs += isManga ? `, chapters_greater: $chapters_greater` : `, episodes_greater: $episodes_greater`;
-            if(isManga) variables.chapters_greater = minC - 1; else variables.episodes_greater = minC - 1;
-        }
-        if (!isNaN(maxC) && maxC > 0) {
-            queryArgs += isManga ? `, $chapters_lesser: Int` : `, $episodes_lesser: Int`;
-            mediaArgs += isManga ? `, chapters_lesser: $chapters_lesser` : `, episodes_lesser: $episodes_lesser`;
-            if(isManga) variables.chapters_lesser = maxC + 1; else variables.episodes_lesser = maxC + 1;
-        }
+        let minC = parseInt($('exp-chap-min').value), maxC = parseInt($('exp-chap-max').value), isManga = expCurrentType === 'MANGA';
+        if (!isNaN(minC) && minC > 0) { queryArgs += isManga ? `, $chapters_greater: Int` : `, $episodes_greater: Int`; mediaArgs += isManga ? `, chapters_greater: $chapters_greater` : `, episodes_greater: $episodes_greater`; if(isManga) variables.chapters_greater = minC - 1; else variables.episodes_greater = minC - 1; }
+        if (!isNaN(maxC) && maxC > 0) { queryArgs += isManga ? `, $chapters_lesser: Int` : `, $episodes_lesser: Int`; mediaArgs += isManga ? `, chapters_lesser: $chapters_lesser` : `, episodes_lesser: $episodes_lesser`; if(isManga) variables.chapters_lesser = maxC + 1; else variables.episodes_lesser = maxC + 1; }
 
-        let query = `query(${queryArgs}) { Page(page: $page, perPage: $perPage) { pageInfo { hasNextPage } media(${mediaArgs}) { id title { english romaji } coverImage { large } averageScore meanScore popularity chapters episodes siteUrl isAdult tags { name rank } } } }`;
+        let query = `query(${queryArgs}) { Page(page: $page, perPage: $perPage) { pageInfo { hasNextPage } media(${mediaArgs}) { id title { english romaji } coverImage { large } averageScore meanScore popularity chapters episodes siteUrl isAdult tags { name rank } externalLinks { site language url } } } }`;
         
         try {
-            const data = await fetchAPI(query, variables); 
-            let list = data.Page.media; 
-            expHasNextPage = data.Page.pageInfo.hasNextPage;
+            const data = await fetchAPI(query, variables); let list = data.Page.media; expHasNextPage = data.Page.pageInfo.hasNextPage;
             
-            // Client side percentage filter for Tags
+            // Client side filter for Tags
             if (activeTags.length > 0) { 
-                list = list.filter(item => { 
-                    return activeTags.every(targetTag => { 
-                        let requiredRelevance = expSelectedTags.get(targetTag) || 0; 
-                        if (requiredRelevance === 0) return true; 
-                        let foundTag = item.tags.find(t => t.name === targetTag); 
-                        return foundTag && foundTag.rank >= requiredRelevance; 
-                    }); 
-                }); 
+                list = list.filter(item => { return activeTags.every(targetTag => { let requiredRelevance = expSelectedTags.get(targetTag) || 0; if (requiredRelevance === 0) return true; let foundTag = item.tags.find(t => t.name === targetTag); return foundTag && foundTag.rank >= requiredRelevance; }); }); 
+            }
+
+            // Client side filter for Source
+            let sourceFilter = $('exp-source-filter')?.value || 'all';
+            if (sourceFilter !== 'all') {
+                list = list.filter(item => {
+                    if (!item.externalLinks || item.externalLinks.length === 0) return false;
+                    return item.externalLinks.some(link => {
+                        let isEN = (link.language === 'English' || formatLangCode(link.language) === ' (EN)');
+                        if (sourceFilter === 'EN_ALL') return isEN;
+                        else if (sourceFilter.includes('(EN)')) { let baseName = sourceFilter.replace(' (EN)', '').toLowerCase(); return link.site.toLowerCase().includes(baseName) && isEN; } 
+                        else return link.site.toLowerCase().includes(sourceFilter.toLowerCase());
+                    });
+                });
             }
 
             if (sortVal === 'MEAN_SCORE_DESC') list.sort((a, b) => (b.meanScore || 0) - (a.meanScore || 0));
-            
             updateDynamicTitle();
             
-            if (!append && (!list || list.length === 0)) { 
-                grid.innerHTML = `<div class="exp-loading-view"><span style="text-align:center;">No records found matching these constraints.</span></div>`; 
-                return; 
-            }
+            if (!append && (!list || list.length === 0)) { grid.innerHTML = `<div class="exp-loading-view"><span style="text-align:center;">No records found matching these constraints.</span></div>`; return; }
             
             const html = list.map((item, index) => {
                 currentResultsMap[item.id] = item;
@@ -1344,67 +820,35 @@
                 </div>`;
             }).join('');
             
-            if (append) grid.insertAdjacentHTML('beforeend', html); 
-            else grid.innerHTML = html;
-            
+            if (append) grid.insertAdjacentHTML('beforeend', html); else grid.innerHTML = html;
         } catch (error) { 
             if (!append) grid.innerHTML = `<div class="exp-loading-view"><span style="color:#f38ba8; text-align:center;"><strong>API Error:</strong><br>${error.message}</span></div>`; 
         } finally { 
-            setTimeout(() => { 
-                expIsLoading = false; 
-                $('exp-scroll-sentinel').style.display = expHasNextPage ? 'flex' : 'none'; 
-                
-                // Keep loading if there is space on a massive screen
-                if (expHasNextPage && grid.children.length < 20) {
-                    expCurrentPage++;
-                    expExecuteSearch(true);
-                }
-            }, 300); 
+            setTimeout(() => { expIsLoading = false; $('exp-scroll-sentinel').style.display = expHasNextPage ? 'flex' : 'none'; if (expHasNextPage && grid.children.length < 20) { expCurrentPage++; expExecuteSearch(true); } }, 300); 
         }
     }
 
-    // Infinite Scroll
-    let scrollObserver = new IntersectionObserver((entries) => { 
-        if (entries[0].isIntersecting && !expIsLoading && expHasNextPage) { 
-            if (!initialLoadTriggered) return;
-            expCurrentPage++; 
-            expExecuteSearch(true); 
-        } 
-    }, { rootMargin: '800px' });
+    let scrollObserver = new IntersectionObserver((entries) => { if (entries[0].isIntersecting && !expIsLoading && expHasNextPage) { if (!initialLoadTriggered) return; expCurrentPage++; expExecuteSearch(true); } }, { rootMargin: '800px' });
 
-    // Surprise Me Modal
     async function expSurpriseMe() {
-        $('exp-surp-modal-overlay').style.display = 'block'; 
-        let mod = $('exp-surp-modal'); 
-        mod.style.display = 'flex';
-        updateModalScrollLock();
-        mod.innerHTML = '<div class="exp-spinner" style="margin:40px;"></div><div style="font-size:12px; color:var(--text-muted);">Consulting the Oracle...</div>';
+        $('exp-surp-modal-overlay').style.display = 'block'; let mod = $('exp-surp-modal'); mod.style.display = 'flex';
+        updateModalScrollLock(); mod.innerHTML = '<div class="exp-spinner" style="margin:40px;"></div><div style="font-size:12px; color:var(--text-muted);">Consulting the Oracle...</div>';
         
         let variables = { page: Math.floor(Math.random() * 5) + 1, perPage: 50, type: expCurrentType, sort: ['SCORE_DESC'] };
         variables.isAdult = $('exp-nsfw-toggle').checked && !$('exp-sfw-toggle').checked ? true : ($('exp-sfw-toggle').checked && !$('exp-nsfw-toggle').checked ? false : undefined);
         
-        let query = `query($page: Int, $perPage: Int, $type: MediaType, $sort: [MediaSort], $isAdult: Boolean) { 
-            Page(page: $page, perPage: $perPage) { media(type: $type, sort: $sort, isAdult: $isAdult) { id title { english romaji } coverImage { large } averageScore meanScore popularity chapters episodes siteUrl tags { name } } } 
-        }`;
-        
         try {
-            const data = await fetchAPI(query, variables); 
-            let list = data.Page.media;
-            if (!list || list.length === 0) throw new Error("No data");
+            const data = await fetchAPI(`query($page: Int, $perPage: Int, $type: MediaType, $sort: [MediaSort], $isAdult: Boolean) { Page(page: $page, perPage: $perPage) { media(type: $type, sort: $sort, isAdult: $isAdult) { id title { english romaji } coverImage { large } averageScore meanScore popularity chapters episodes siteUrl tags { name } } } }`, variables); 
+            let list = data.Page.media; if (!list || list.length === 0) throw new Error("No data");
             
-            let rec = list[Math.floor(Math.random() * list.length)];
-            currentResultsMap[rec.id] = rec; 
+            let rec = list[Math.floor(Math.random() * list.length)]; currentResultsMap[rec.id] = rec; 
             const hasOmega = rec.tags?.some(t => t.name.toLowerCase() === 'omegaverse');
             const title = (rec.title.english || rec.title.romaji) + (hasOmega ? ' 🐺' : '');
-            const scoreRef = rec.averageScore;
-            const scoreFormat = scoreRef ? `★ ${scoreRef / 10}` : '';
-            const scoreColor = getScoreColor(rec.meanScore || scoreRef);
-            const unitText = (rec.chapters || rec.episodes || '?') + ' Chs';
+            const scoreRef = rec.averageScore; const scoreFormat = scoreRef ? `★ ${scoreRef / 10}` : '';
+            const scoreColor = getScoreColor(rec.meanScore || scoreRef); const unitText = (rec.chapters || rec.episodes || '?') + ' Chs';
             
             mod.innerHTML = `
-                <div style="width:100%; display:flex; justify-content:flex-end; margin-bottom: -15px;">
-                    <button class="exp-action-btn" style="padding:8px 12px;" onclick="closeExpSurpModal()">✕</button>
-                </div>
+                <div style="width:100%; display:flex; justify-content:flex-end; margin-bottom: -15px;"><button class="exp-action-btn" style="padding:8px 12px;" onclick="closeExpSurpModal()">✕</button></div>
                 <div style="font-size:18px; margin-bottom:12px; font-weight:bold; color:var(--accent);">Discovery Found!</div>
                 <div class="exp-card-link" onclick="closeExpSurpModal(); handleCardClick(${rec.id}, event)" style="position:relative; width:60vw; aspect-ratio:1/1.5; border-radius:12px; display:block; overflow:hidden;">
                     <img src="${rec.coverImage.large}" style="width:100%; height:100%; object-fit:cover;">
@@ -1413,24 +857,19 @@
                         <div style="background:rgba(0,0,0,0.8); color:#fff; font-size:12px; font-weight:bold; padding:4px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.15);">${unitText}</div>
                     </div>
                 </div>
-                <div style="font-weight:800; font-size:18px; margin-top:16px; text-align:center; font-style:normal;">${title}</div>
-            `;
-        } catch (e) { 
-            mod.innerHTML = `<div style="padding:20px; color:#f38ba8;">Error occurred.</div><button class="exp-action-btn" onclick="closeExpSurpModal()">✕</button>`; 
-        }
+                <div style="font-weight:800; font-size:18px; margin-top:16px; text-align:center; font-style:normal;">${title}</div>`;
+        } catch (e) { mod.innerHTML = `<div style="padding:20px; color:#f38ba8;">Error occurred.</div><button class="exp-action-btn" onclick="closeExpSurpModal()">✕</button>`; }
     }
 
-    window.closeExpSurpModal = function() { 
-        $('exp-surp-modal-overlay').style.display = 'none'; 
-        $('exp-surp-modal').style.display = 'none'; 
-        updateModalScrollLock();
-    }
+    window.closeExpSurpModal = function() { $('exp-surp-modal-overlay').style.display = 'none'; $('exp-surp-modal').style.display = 'none'; updateModalScrollLock(); }
 
-    // Init
-    window.onload = () => {
-        initYearDropdowns();
-        scrollObserver.observe($('exp-scroll-sentinel'));
-    };
+    window.onload = () => { initYearDropdowns(); scrollObserver.observe($('exp-scroll-sentinel')); };
 </script>
+
+<br>
+<br>
+If you're curious about how those AniList tags influence popularity and trends, I've linked a breakdown of the database's most used tags down below.
+
+[100 Most Used Anime Tags (AniList Stats)](https://www.youtube.com/watch?v=Jedf8IdTyjs)
 </body>
 </html>
