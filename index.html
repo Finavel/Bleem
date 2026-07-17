@@ -34,9 +34,9 @@
         .clear-search-btn { position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
         .clear-search-btn:hover { color: var(--highlight); }
 
-        select, input[type="number"] { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--highlight); padding: 0 16px; border-radius: 18px; height: 36px; outline: none; font-size: 14px; box-sizing: border-box; appearance: none; }
+        select, input[type="number"], input[type="text"] { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--highlight); padding: 0 16px; border-radius: 18px; height: 36px; outline: none; font-size: 14px; box-sizing: border-box; appearance: none; }
         select { padding-right: 32px; background-image: url('data:image/svg+xml;utf8,<svg fill="%239fadbd" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position: right 10px center; }
-        select:focus, input[type="number"]:focus { border-color: var(--accent); }
+        select:focus, input[type="number"]:focus, input[type="text"]:focus { border-color: var(--accent); }
         
         .exp-filter-dashboard {
             padding: 24px 16px; display: none; flex-direction: column; gap: 16px;
@@ -86,9 +86,17 @@
         .exp-loading-view { grid-column: 1 / -1; display: flex; justify-content: center; padding: 30px 0; width: 100%; height: 60px;}
 
         label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
-        input[type="checkbox"] { appearance: none; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); width: 18px; height: 18px; border-radius: 4px; display: flex; justify-content: center; align-items: center; }
+        input[type="checkbox"] { appearance: none; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); width: 18px; height: 18px; border-radius: 4px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
         input[type="checkbox"]:checked::after { content: '✓'; color: #000; font-size: 12px; font-weight: bold; }
+
+        /* Force 8-Column Desktop Layout */
+        @media (min-width: 1024px) {
+            .exp-browser-grid { grid-template-columns: repeat(8, 1fr) !important; }
+            .rec-matrix-grid { grid-template-columns: repeat(8, 1fr) !important; }
+            .exp-tag-modal { width: 50vw; }
+            .exp-modal-grid { grid-template-columns: repeat(4, 1fr); }
+        }
     </style>
 </head>
 <body>
@@ -110,6 +118,17 @@
         
         <!-- Hidden Settings Box -->
         <div class="exp-filter-dashboard" id="settings-box">
+            <div style="display: flex; gap: 12px;">
+                <div class="exp-filter-group" style="flex:0.5;">
+                    <label class="exp-filter-label" style="display: flex; align-items: center; height: 36px; margin-top: 14px; cursor: pointer; color: var(--highlight);">
+                        <input type="checkbox" id="exp-in-list-toggle" onchange="expTriggerSearch()"> In My List
+                    </label>
+                </div>
+                <div class="exp-filter-group" style="flex:1;">
+                    <span class="exp-filter-label">Anilist Username</span>
+                    <input type="text" id="exp-username" class="full-width" value="Finavel" onchange="expTriggerSearch()">
+                </div>
+            </div>
             <div style="display: flex; gap: 12px;">
                 <div class="exp-filter-group" style="flex:1;">
                     <span class="exp-filter-label">Media Type</span>
@@ -232,6 +251,7 @@
             <span style="font-weight:700; font-size:16px;">Select Tags</span>
             <button class="exp-action-btn" style="padding:4px 12px; border-radius:8px;" onclick="expCloseTagModal()">✕</button>
         </div>
+        <input type="text" id="exp-tag-search-input" placeholder="Search tags or genres..." oninput="expFilterModalTags()" style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--highlight); padding: 8px 16px; border-radius: 18px; outline: none; margin-top: 12px; width: 100%; box-sizing: border-box; font-size: 14px;">
     </div>
     <div class="exp-modal-body">
         <div class="exp-filter-label">Genres</div>
@@ -261,6 +281,7 @@
     let currentResultsMap = {}; 
     let currentDetailData = null; 
     let initialLoadTriggered = false;
+    let cachedUserIds = null;
     
     const anilistGenres = ["Action", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", "Horror", "Mahou Shoujo", "Mecha", "Music", "Mystery", "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Supernatural", "Thriller"];
     const anilistTags = ["Boys' Love", "4-koma", "Achromatic", "Achronological Order", "Acrobatics", "Acting", "Adoption", "Advertisement", "Afterlife", "Age Gap", "Age Regression", "Agender", "Agriculture", "Airsoft", "Alchemy", "Aliens", "Alternate Universe", "American Football", "Amnesia", "Amputation", "Anachronism", "Anal Sex", "Ancient China", "Angels", "Animals", "Anthology", "Anthropomorphism", "Anti-Hero", "Archery", "Armpits", "Aromantic", "Arranged Marriage", "Artificial Intelligence", "Asexual", "Ashikoki", "Asphyxiation", "Assassins", "Astronomy", "Athletics", "Augmented Reality", "Autobiographical", "Aviation", "Badminton", "Ballet", "Band", "Bar", "Baseball", "Basketball", "Battle Royale", "Biographical", "Bisexual", "Blackmail", "Board Game", "Boarding School", "Body Horror", "Body Image", "Body Swapping", "Bondage", "Boobjob", "Bowling", "Boxing", "Bullying", "Butler", "CGI", "Calligraphy", "Camping", "Cannibalism", "Card Battle", "Cars", "Centaur", "Cheating", "Cheerleading", "Chibi", "Chimera", "Chuunibyou", "Circus", "Class Struggle", "Classic Literature", "Classical Music", "Clone", "Coastal", "Cohabitation", "College", "Coming of Age", "Conspiracy", "Cosmic Horror", "Cosplay", "Cowboys", "Creature Taming", "Crime", "Criminal Organization", "Crossdressing", "Crossover", "Cult", "Cultivation", "Cumflation", "Cunnilingus", "Curses", "Cute Boys Doing Cute Things", "Cute Girls Doing Cute Things", "Cyberpunk", "Cyborg", "Cycling", "DILF", "Dancing", "Death Game", "Deepthroat", "Defloration", "Delinquents", "Demons", "Denpa", "Desert", "Detective", "Dinosaurs", "Disability", "Dissociative Identities", "Double Penetration", "Dragons", "Drawing", "Drugs", "Dullahan", "Dungeon", "Dystopian", "E-Sports", "Eco-Horror", "Economics", "Educational", "Elderly Protagonist", "Elf", "Ensemble Cast", "Environmental", "Episodic", "Ero Guro", "Erotic Piercings", "Espionage", "Estranged Family", "Exhibitionism", "Exorcism", "Facial", "Fairy", "Fairy Tale", "Fake Relationship", "Family Life", "Fashion", "Feet", "Fellatio", "Femboy", "Femdom", "Female Harem", "Female Protagonist", "Fencing", "Filmmaking", "Fingering", "Firefighters", "Fishing", "Fitness", "Flat Chest", "Food", "Football", "Foreign", "Found Family", "Fugitive", "Full Color", "Futanari", "Gag Humor", "Gambling", "Gangs", "Gender Bending", "Ghost", "Go", "Goblin", "Gods", "Golf", "Gore", "Group Sex", "Guns", "Gyaru", "Handball", "Handjob", "Harem", "Henshin", "Hentai", "Heterosexual", "Hikikomori", "Hip-hop Music", "Historical", "Homeless", "Horticulture", "Human Experimentation", "Human Pet", "Hypersexuality", "Ice Skating", "Idol", "Incest", "Indigenous Cultures", "Inn", "Inseki", "Interspecies", "Irrumatio", "Isekai", "Iyashikei", "Jazz Music", "Josei", "Judo", "Kaiju", "Kemonomimi", "Kids", "Kingdom Management", "Konbini", "Kuudere", "LGBTQ+ Themes", "Lactation", "Language Barrier", "Large Breasts", "Long Strip", "Lost Civilization", "Love Triangle", "MILF", "Mafia", "Magic", "Maids", "Makeup", "Male Harem", "Male Pregnancy", "Male Protagonist", "Marriage", "Martial Arts", "Masochism", "Masturbation", "Matchmaking", "Matriarchy", "Medicine", "Medieval", "Memory Manipulation", "Mermaid", "Meta", "Military", "Mixed Gender Harem", "Mixed Media", "Modeling", "Monster Boy", "Monster Girl", "Mopeds", "Motorcycles", "Mountaineering", "Musical Theater", "Mythology", "Nakadashi", "Natural Disaster", "Necromancy", "Nekomimi", "Netorare", "Netorase", "Netori", "Ninja", "No Dialogue", "Noir", "Non-fiction", "Nudity", "Nun", "Office", "Office Lady", "Oiran", "Ojou-sama", "Omegaverse", "Orphan", "Otaku Culture", "Outdoor Activities", "POV", "Pandemic", "Parenthood", "Parody", "Pet Play", "Philosophy", "Photography", "Pirates", "Poker", "Police", "Politics", "Polyamorous", "Post-Apocalyptic", "Pregnancy", "Primarily Adult Cast", "Primarily Animal Cast", "Primarily Child Cast", "Primarily Female Cast", "Primarily Male Cast", "Primarily Teen Cast", "Prison", "Prostitution", "Proxy Battle", "Psychosexual", "Public Sex", "Rakugo", "Rape", "Real Robot", "Rehabilitation", "Reincarnation", "Religion", "Rescue", "Restaurant", "Revenge", "Reverse Harem", "Reverse Isekai", "Rimjob", "Robots", "Rock Music", "Rotoscoping", "Royal Affairs", "Rugby", "Rural", "Sadism", "Samurai", "Satire", "Scat", "School", "School Club", "Sci-Fi", "Scissoring", "Scuba Diving", "Seinen", "Sex Toys", "Shapeshifting", "Ships", "Shogi", "Short-Form Chapter", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Shrine Maiden", "Skateboarding", "Skeleton", "Slapstick", "Slavery", "Snowscape", "Software Development", "Space", "Space Opera", "Spearplay", "Sports", "Squirting", "Steampunk", "Succubus", "Suicide", "Sumata", "Sumo", "Super Power", "Super Robot", "Superhero", "Surreal Comedy", "Survival", "Sweat", "Swimming", "Swordplay", "Table Tennis", "Tanks", "Tanned Skin", "Teacher", "Teens' Love", "Tennis", "Tentacles", "Terrorism", "Threesome", "Thriller", "Time Loop", "Time Manipulation", "Time Skip", "Tokusatsu", "Tomboy", "Torture", "Tragedy", "Trains", "Transgender", "Travel", "Triads", "Tsundere", "Twins", "Unrequited Love", "Urban", "Urban Fantasy", "Vampire", "Video Games", "Vikings", "Villainess", "Virginity", "Virtual World", "Vocal Synth", "Volleyball", "Vore", "Voyeur", "War", "Watersports", "Werewolf", "Wilderness", "Witch", "Work", "Wrestling", "Writing", "Wuxia", "Yakuza", "Yandere", "Yaoi", "Youkai", "Yuri", "Zombie", "Zoophilia"];
@@ -718,7 +739,7 @@
     async function expExecuteSearch(append = false) {
         if (expIsLoading) return; expIsLoading = true;
         const grid = $('exp-content-grid'); const sentinel = $('exp-scroll-sentinel');
-        if (!append) { grid.innerHTML = ''; expCurrentPage = 1; expHasNextPage = true; }
+        if (!append) { grid.innerHTML = ''; expCurrentPage = 1; expHasNextPage = true; cachedUserIds = null; }
         sentinel.style.display = 'flex';
         
         const searchVal = $('exp-search-input').value.trim();
@@ -726,11 +747,38 @@
         
         if (!isSfw && !isNsfw) { grid.innerHTML = `<div class="exp-loading-view"><span>Please select at least one content rating.</span></div>`; expIsLoading = false; sentinel.style.display = 'none'; return; }
         
+        const inMyList = $('exp-in-list-toggle').checked;
+        if (inMyList) {
+            const userName = $('exp-username').value.trim();
+            if (!userName) {
+                grid.innerHTML = `<div class="exp-loading-view"><span style="text-align:center;">Please enter an AniList username.</span></div>`;
+                expIsLoading = false; sentinel.style.display = 'none'; return;
+            }
+            if (!cachedUserIds) {
+                try {
+                    const listData = await fetchAPI(`query($userName: String, $type: MediaType) { MediaListCollection(userName: $userName, type: $type) { lists { entries { mediaId } } } }`, { userName, type: expCurrentType });
+                    cachedUserIds = [];
+                    if (listData && listData.MediaListCollection && listData.MediaListCollection.lists) {
+                        listData.MediaListCollection.lists.forEach(l => l.entries.forEach(e => cachedUserIds.push(e.mediaId)));
+                    }
+                } catch (e) {
+                    grid.innerHTML = `<div class="exp-loading-view"><span style="color:#f38ba8; text-align:center;">Error finding user list for "${userName}".</span></div>`;
+                    expIsLoading = false; sentinel.style.display = 'none'; return;
+                }
+            }
+            if (cachedUserIds.length === 0) {
+                grid.innerHTML = `<div class="exp-loading-view"><span style="text-align:center;">No matching entries found in ${userName}'s list.</span></div>`;
+                expIsLoading = false; sentinel.style.display = 'none'; return;
+            }
+        }
+
         const sortVal = $('exp-sort-filter').value, formatVal = $('exp-format-filter').value, statusVal = $('exp-status-filter').value;
         let activeGenres = Array.from(expSelectedTags.keys()).filter(t => anilistGenres.includes(t)), activeTags = Array.from(expSelectedTags.keys()).filter(t => !anilistGenres.includes(t));
         
         let queryArgs = `$page: Int, $perPage: Int, $type: MediaType, $sort: [MediaSort]`, mediaArgs = `type: $type, sort: $sort`, apiSortVal = sortVal === 'MEAN_SCORE_DESC' ? 'SCORE_DESC' : sortVal;
         let variables = { page: expCurrentPage, perPage: 40, type: expCurrentType, sort: [apiSortVal] }; 
+        
+        if (inMyList && cachedUserIds && cachedUserIds.length > 0) { queryArgs += `, $idIn: [Int]`; mediaArgs += `, id_in: $idIn`; variables.idIn = cachedUserIds; }
         
         if (isSfw && !isNsfw) { queryArgs += `, $isAdult: Boolean`; mediaArgs += `, isAdult: $isAdult`; variables.isAdult = false; }
         else if (!isSfw && isNsfw) { queryArgs += `, $isAdult: Boolean`; mediaArgs += `, isAdult: $isAdult`; variables.isAdult = true; }
@@ -865,11 +913,5 @@
 
     window.onload = () => { initYearDropdowns(); scrollObserver.observe($('exp-scroll-sentinel')); };
 </script>
-
-<br>
-<br>
-If you're curious about how those AniList tags influence popularity and trends, I've linked a breakdown of the database's most used tags down below.
-
-[100 Most Used Anime Tags (AniList Stats)](https://www.youtube.com/watch?v=Jedf8IdTyjs)
 </body>
 </html>
